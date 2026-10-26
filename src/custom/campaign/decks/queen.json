@@ -1,0 +1,10 @@
+{
+	"name": "Queen",
+	"format_id": "three_heroes",
+	"cards": {
+		"ec99997f7b88478ab17503083172efeb": 1,
+		"50dbe7cecd2b4c38a422c0e53c431286": 1,
+		"b6fdb169fcdd4df2b2b48a47893fae99": 1
+	},
+	"total": 3
+}

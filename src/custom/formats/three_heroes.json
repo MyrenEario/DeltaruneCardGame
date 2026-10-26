@@ -1,0 +1,18 @@
+{
+	"schema_version": 1,
+	"id": "three_heroes",
+	"name": "3 Heroes",
+	"objective_cards": [
+		"0a447553885047f599ec70902d6ee658",
+		"073d4b07d9d342adb0e87306e25a54b2",
+		"6263f4dc44ca493a9731b532f49215b4"
+	],
+	"banned_cards": [
+		"0a447553885047f599ec70902d6ee658",
+		"073d4b07d9d342adb0e87306e25a54b2",
+		"6263f4dc44ca493a9731b532f49215b4"
+	],
+	"min_deck_size": 20,
+	"max_deck_size": 30,
+	"max_copies": 3
+}

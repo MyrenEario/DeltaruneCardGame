@@ -1,0 +1,18 @@
+{
+	"schema_version": 1,
+	"id": "roaring_knight",
+	"name": "Roaring Knight",
+	"objective_cards": [
+		"73812cba66dd421a95f4e0c538926a6b",
+		"b2001d007571460b81b7e63cda29c991",
+		"36ccf23b471e4851ae343b525c110754"
+	],
+	"banned_cards": [
+		"73812cba66dd421a95f4e0c538926a6b",
+		"b2001d007571460b81b7e63cda29c991",
+		"36ccf23b471e4851ae343b525c110754"
+	],
+	"min_deck_size": 52,
+	"max_deck_size": 60,
+	"max_copies": 3
+}

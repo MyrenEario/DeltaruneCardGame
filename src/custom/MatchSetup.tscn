@@ -1,0 +1,145 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/custom/MatchSetup.gd" type="Script" id=1]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.0862745, 0.0862745, 0.105882, 0.980392 )
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color( 0.556863, 0.470588, 0.117647, 1 )
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="MatchSetup" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+visible = false
+mouse_filter = 0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Shade" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color( 0, 0, 0, 0.72 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Center" type="CenterContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="PanelContainer" parent="Center"]
+rect_min_size = Vector2( 520, 0 )
+custom_styles/panel = SubResource( 1 )
+
+[node name="Margin" type="MarginContainer" parent="Center/Panel"]
+margin_left = 20.0
+margin_top = 20.0
+margin_right = 20.0
+margin_bottom = 20.0
+custom_constants/margin_right = 20
+custom_constants/margin_top = 20
+custom_constants/margin_left = 20
+custom_constants/margin_bottom = 20
+
+[node name="VBox" type="VBoxContainer" parent="Center/Panel/Margin"]
+margin_left = 20.0
+margin_top = 20.0
+margin_right = 20.0
+margin_bottom = 20.0
+custom_constants/separation = 8
+
+[node name="Title" type="Label" parent="Center/Panel/Margin/VBox"]
+margin_right = 480.0
+margin_bottom = 31.0
+text = "Start Match"
+align = 1
+
+[node name="FormatLabel" type="Label" parent="Center/Panel/Margin/VBox"]
+margin_top = 39.0
+margin_right = 480.0
+margin_bottom = 58.0
+text = "Format"
+
+[node name="FormatSelect" type="OptionButton" parent="Center/Panel/Margin/VBox"]
+margin_top = 62.0
+margin_right = 480.0
+margin_bottom = 89.0
+
+[node name="Player1Label" type="Label" parent="Center/Panel/Margin/VBox"]
+margin_top = 97.0
+margin_right = 480.0
+margin_bottom = 116.0
+text = "Player 1 Deck"
+
+[node name="Player1Select" type="OptionButton" parent="Center/Panel/Margin/VBox"]
+margin_top = 120.0
+margin_right = 480.0
+margin_bottom = 147.0
+
+[node name="Player2Label" type="Label" parent="Center/Panel/Margin/VBox"]
+margin_top = 155.0
+margin_right = 480.0
+margin_bottom = 174.0
+text = "Player 2 Deck"
+
+[node name="Player2Select" type="OptionButton" parent="Center/Panel/Margin/VBox"]
+margin_top = 178.0
+margin_right = 480.0
+margin_bottom = 205.0
+
+[node name="Player2ModeCheck" type="CheckButton" parent="Center/Panel/Margin/VBox"]
+margin_top = 213.0
+margin_right = 480.0
+margin_bottom = 253.0
+pressed = true
+text = "Player 2 is AI"
+
+[node name="StatusLabel" type="Label" parent="Center/Panel/Margin/VBox"]
+margin_top = 261.0
+margin_right = 480.0
+margin_bottom = 301.0
+rect_min_size = Vector2( 0, 40 )
+text = "Each player selects their own saved deck."
+align = 1
+autowrap = true
+
+[node name="Buttons" type="HBoxContainer" parent="Center/Panel/Margin/VBox"]
+margin_top = 261.0
+margin_right = 480.0
+margin_bottom = 288.0
+custom_constants/separation = 8
+alignment = 1
+
+[node name="Start" type="Button" parent="Center/Panel/Margin/VBox/Buttons"]
+margin_right = 110.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 110, 0 )
+text = "Start Match"
+
+[node name="DeckBuilder" type="Button" parent="Center/Panel/Margin/VBox/Buttons"]
+margin_left = 118.0
+margin_right = 228.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 110, 0 )
+text = "Deck Builder"
+
+[node name="Back" type="Button" parent="Center/Panel/Margin/VBox/Buttons"]
+margin_left = 236.0
+margin_right = 346.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 110, 0 )
+text = "Main Menu"

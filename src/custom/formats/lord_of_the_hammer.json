@@ -1,0 +1,22 @@
+{
+	"schema_version": 1,
+	"id": "lord_of_the_hammer",
+	"name": "Lord of the Hammer",
+	"objective_cards": [
+		"84f4339b93d947a5aeca4d32c36ba62c",
+		"a5406f633c29408ea6a200358c7552a0",
+		"1bf45e899e554b24a0a69e61d86d51bf",
+		"e2f0f86838db4e4f890d1e3292a91322",
+		"69d7a62a42af4765b514848c027e99b5"
+	],
+	"banned_cards": [
+		"84f4339b93d947a5aeca4d32c36ba62c",
+		"a5406f633c29408ea6a200358c7552a0",
+		"1bf45e899e554b24a0a69e61d86d51bf",
+		"e2f0f86838db4e4f890d1e3292a91322",
+		"69d7a62a42af4765b514848c027e99b5"
+	],
+	"min_deck_size": 52,
+	"max_deck_size": 60,
+	"max_copies": 3
+}

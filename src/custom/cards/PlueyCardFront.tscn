@@ -1,0 +1,249 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://src/custom/cards/PlueyCardFront.gd" type="Script" id=2]
+[ext_resource path="res://themes/darktheme/darktheme.theme" type="Theme" id=3]
+[ext_resource path="res://assets/icons/rupee.png" type="Texture" id=5]
+[ext_resource path="res://themes/darktheme/fonts/Reggae_One/ReggaeOne-Regular.ttf" type="DynamicFontData" id=6]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.12, 0.12, 0.15, 1 )
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id=2]
+border_color = Color( 0, 0, 0, 1 )
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+
+[sub_resource type="DynamicFont" id=3]
+size = 14
+outline_size = 1
+outline_color = Color( 0, 0, 0, 1 )
+use_filter = true
+font_data = ExtResource( 1 )
+fallback/0 = ExtResource( 6 )
+
+[node name="Front" type="Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -1130.0
+margin_bottom = -480.0
+rect_min_size = Vector2( 150, 240 )
+mouse_filter = 2
+theme = ExtResource( 3 )
+custom_styles/panel = SubResource( 1 )
+script = ExtResource( 2 )
+
+[node name="Margin" type="MarginContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_min_size = Vector2( 150, 240 )
+mouse_filter = 2
+custom_constants/margin_right = 4
+custom_constants/margin_left = 4
+
+[node name="CardText" type="VBoxContainer" parent="Margin"]
+margin_left = 4.0
+margin_right = 150.0
+margin_bottom = 240.0
+rect_min_size = Vector2( 0, 240 )
+mouse_filter = 2
+custom_constants/separation = 2
+
+[node name="Header" type="PanelContainer" parent="Margin/CardText"]
+margin_right = 146.0
+margin_bottom = 46.0
+rect_min_size = Vector2( 142, 0 )
+mouse_filter = 2
+custom_styles/panel = SubResource( 2 )
+
+[node name="HeaderText" type="VBoxContainer" parent="Margin/CardText/Header"]
+margin_right = 146.0
+margin_bottom = 46.0
+mouse_filter = 2
+size_flags_horizontal = 3
+custom_constants/separation = 0
+
+[node name="HeaderRow" type="HBoxContainer" parent="Margin/CardText/Header/HeaderText"]
+margin_right = 146.0
+margin_bottom = 23.0
+mouse_filter = 2
+custom_constants/separation = 2
+
+[node name="CostIcon" type="TextureRect" parent="Margin/CardText/Header/HeaderText/HeaderRow"]
+margin_right = 14.0
+margin_bottom = 23.0
+rect_min_size = Vector2( 14, 14 )
+mouse_filter = 2
+texture = ExtResource( 5 )
+expand = true
+stretch_mode = 6
+
+[node name="Cost" type="Label" parent="Margin/CardText/Header/HeaderText/HeaderRow"]
+margin_left = 16.0
+margin_top = 2.0
+margin_right = 34.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 18, 15 )
+custom_colors/font_color = Color( 0.9, 0.8, 0.1, 1 )
+custom_fonts/font = SubResource( 3 )
+text = "0"
+
+[node name="Prefix" type="Label" parent="Margin/CardText/Header/HeaderText/HeaderRow"]
+margin_left = 36.0
+margin_right = 122.0
+margin_bottom = 23.0
+rect_min_size = Vector2( 86, 13 )
+size_flags_vertical = 1
+custom_colors/font_color = Color( 0.78, 0.74, 0.6, 1 )
+align = 1
+valign = 1
+autowrap = true
+
+[node name="Spacer" type="Control" parent="Margin/CardText/Header/HeaderText/HeaderRow"]
+margin_left = 124.0
+margin_right = 124.0
+margin_bottom = 23.0
+mouse_filter = 2
+size_flags_horizontal = 3
+
+[node name="LV" type="Label" parent="Margin/CardText/Header/HeaderText/HeaderRow"]
+margin_left = 126.0
+margin_top = 2.0
+margin_right = 146.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 20, 15 )
+custom_colors/font_color = Color( 0.75, 0.85, 1, 1 )
+custom_fonts/font = SubResource( 3 )
+text = "0"
+align = 2
+size_flags_horizontal = 3
+
+[node name="Name" type="Label" parent="Margin/CardText/Header/HeaderText"]
+margin_top = 23.0
+margin_right = 146.0
+margin_bottom = 46.0
+rect_min_size = Vector2( 146, 18 )
+size_flags_vertical = 1
+custom_colors/font_color = Color( 1, 0.8, 0.2, 1 )
+text = "Card Name"
+align = 1
+valign = 1
+autowrap = true
+
+[node name="Illustration" type="TextureRect" parent="Margin/CardText"]
+margin_top = 48.0
+margin_right = 146.0
+margin_bottom = 107.0
+rect_min_size = Vector2( 142, 59 )
+mouse_filter = 2
+expand = true
+stretch_mode = 6
+
+[node name="Type" type="Label" parent="Margin/CardText"]
+margin_top = 109.0
+margin_right = 146.0
+margin_bottom = 132.0
+rect_min_size = Vector2( 142, 14 )
+size_flags_vertical = 1
+text = "Type"
+align = 1
+valign = 1
+autowrap = true
+uppercase = true
+
+[node name="Weakness" type="Label" parent="Margin/CardText"]
+visible = false
+margin_top = 135.0
+margin_right = 146.0
+margin_bottom = 148.0
+rect_min_size = Vector2( 142, 10 )
+mouse_filter = 2
+custom_colors/font_color = Color( 0.82, 0.62, 1, 1 )
+align = 1
+valign = 1
+autowrap = true
+
+[node name="Tags" type="RichTextLabel" parent="Margin/CardText"]
+margin_top = 134.0
+margin_right = 146.0
+margin_bottom = 204.0
+rect_min_size = Vector2( 142, 70 )
+mouse_filter = 2
+scroll_active = false
+
+[node name="Abilities" type="RichTextLabel" parent="Margin/CardText"]
+margin_top = 206.0
+margin_right = 146.0
+margin_bottom = 219.0
+mouse_filter = 2
+size_flags_vertical = 3
+text = "Ability text"
+scroll_active = false
+
+[node name="TagRelations" type="Label" parent="Margin/CardText"]
+visible = false
+margin_top = 221.0
+margin_right = 146.0
+margin_bottom = 232.0
+rect_min_size = Vector2( 142, 11 )
+custom_colors/font_color = Color( 0.72, 0.63, 0.89, 1 )
+custom_constants/line_spacing = 1
+align = 1
+valign = 1
+autowrap = true
+
+[node name="HB" type="HBoxContainer" parent="Margin/CardText"]
+margin_top = 221.0
+margin_right = 146.0
+margin_bottom = 240.0
+rect_min_size = Vector2( 142, 19 )
+mouse_filter = 2
+
+[node name="ActionIcon" type="TextureRect" parent="Margin/CardText/HB"]
+margin_right = 15.0
+margin_bottom = 19.0
+rect_min_size = Vector2( 15, 15 )
+mouse_filter = 2
+expand = true
+stretch_mode = 6
+
+[node name="AT" type="Label" parent="Margin/CardText/HB"]
+margin_left = 18.0
+margin_right = 38.0
+margin_bottom = 18.0
+rect_min_size = Vector2( 20, 15 )
+custom_colors/font_color = Color( 0.9, 0.3, 0.3, 1 )
+custom_fonts/font = SubResource( 3 )
+text = "0"
+valign = 1
+
+[node name="Push" type="Control" parent="Margin/CardText/HB"]
+margin_left = 41.0
+margin_right = 105.0
+margin_bottom = 19.0
+mouse_filter = 2
+size_flags_horizontal = 3
+
+[node name="HP" type="Label" parent="Margin/CardText/HB"]
+margin_left = 108.0
+margin_right = 128.0
+margin_bottom = 18.0
+rect_min_size = Vector2( 20, 15 )
+custom_colors/font_color = Color( 0.9, 0.3, 0.3, 1 )
+custom_fonts/font = SubResource( 3 )
+text = "0"
+align = 2
+valign = 1
+
+[node name="DefenseIcon" type="TextureRect" parent="Margin/CardText/HB"]
+margin_left = 131.0
+margin_right = 146.0
+margin_bottom = 19.0
+rect_min_size = Vector2( 15, 15 )
+mouse_filter = 2
+expand = true
+stretch_mode = 6

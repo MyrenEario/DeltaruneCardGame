@@ -1,0 +1,24 @@
+{
+	"schema_version": 2,
+	"name": "King",
+	"format_id": "three_heroes",
+	"cards": {
+		"22e5e09678bd4eaaa729b34fda727e67": 1,
+		"2d8dcd274399478cb74b8cf51daa8b99": 1,
+		"f6c93ffc6f0f4976ae492c3aaff4dc7e": 1,
+		"b2ea1d7ca47043f5a3000c98851e43c0": 1,
+		"dcbd2fe454794081a0e00b4d1522adb7": 1,
+		"6a0ee062d2dc486a8ef6cb72f17eff87": 1,
+		"338119a11ce44b879dace7468fea25ef": 1
+	},
+	"card_names": {
+		"22e5e09678bd4eaaa729b34fda727e67": "Goulden Sam",
+		"2d8dcd274399478cb74b8cf51daa8b99": "Head Hathy",
+		"f6c93ffc6f0f4976ae492c3aaff4dc7e": "Lancer",
+		"b2ea1d7ca47043f5a3000c98851e43c0": "Hathy",
+		"dcbd2fe454794081a0e00b4d1522adb7": "King",
+		"6a0ee062d2dc486a8ef6cb72f17eff87": "Attractive Thrash Machine",
+		"338119a11ce44b879dace7468fea25ef": "Bloxer"
+	},
+	"total": 7
+}

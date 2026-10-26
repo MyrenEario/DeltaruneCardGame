@@ -1,0 +1,318 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://src/custom/FormatEditor/FormatEditor.gd" type="Script" id=1]
+
+[node name="FormatEditor" type="Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+
+[node name="Margin" type="MarginContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_constants/margin_left = 18
+custom_constants/margin_top = 14
+custom_constants/margin_right = 18
+custom_constants/margin_bottom = 14
+
+[node name="VBox" type="VBoxContainer" parent="Margin"]
+margin_left = 18.0
+margin_top = 14.0
+margin_right = 1262.0
+margin_bottom = 706.0
+
+[node name="Header" type="HBoxContainer" parent="Margin/VBox"]
+margin_right = 1244.0
+margin_bottom = 31.0
+
+[node name="Title" type="Label" parent="Margin/VBox/Header"]
+margin_right = 150.0
+margin_bottom = 31.0
+text = "Game Formats"
+
+[node name="Spacer" type="Control" parent="Margin/VBox/Header"]
+margin_left = 150.0
+margin_right = 1182.0
+margin_bottom = 31.0
+size_flags_horizontal = 3
+
+[node name="Back" type="Button" parent="Margin/VBox/Header"]
+margin_left = 1182.0
+margin_right = 1244.0
+margin_bottom = 31.0
+text = "Back"
+
+[node name="Content" type="HBoxContainer" parent="Margin/VBox"]
+margin_top = 45.0
+margin_right = 1244.0
+margin_bottom = 605.0
+size_flags_vertical = 3
+custom_constants/separation = 12
+
+[node name="FormatColumn" type="VBoxContainer" parent="Margin/VBox/Content"]
+margin_right = 270.0
+margin_bottom = 560.0
+rect_min_size = Vector2( 270, 0 )
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="Margin/VBox/Content/FormatColumn"]
+margin_right = 270.0
+margin_bottom = 19.0
+text = "Formats"
+
+[node name="FormatList" type="ItemList" parent="Margin/VBox/Content/FormatColumn"]
+margin_top = 23.0
+margin_right = 270.0
+margin_bottom = 525.0
+size_flags_vertical = 3
+
+[node name="FormatButtons" type="HBoxContainer" parent="Margin/VBox/Content/FormatColumn"]
+margin_top = 529.0
+margin_right = 270.0
+margin_bottom = 560.0
+
+[node name="New" type="Button" parent="Margin/VBox/Content/FormatColumn/FormatButtons"]
+margin_right = 45.0
+margin_bottom = 31.0
+text = "New"
+
+[node name="Delete" type="Button" parent="Margin/VBox/Content/FormatColumn/FormatButtons"]
+margin_left = 49.0
+margin_right = 104.0
+margin_bottom = 31.0
+text = "Delete"
+
+[node name="EditorColumn" type="VBoxContainer" parent="Margin/VBox/Content"]
+margin_left = 282.0
+margin_right = 1244.0
+margin_bottom = 560.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Fields" type="GridContainer" parent="Margin/VBox/Content/EditorColumn"]
+margin_right = 962.0
+margin_bottom = 145.0
+columns = 2
+
+[node name="IdLabel" type="Label" parent="Margin/VBox/Content/EditorColumn/Fields"]
+margin_right = 100.0
+margin_bottom = 24.0
+text = "ID"
+
+[node name="IdEdit" type="LineEdit" parent="Margin/VBox/Content/EditorColumn/Fields"]
+margin_left = 104.0
+margin_right = 962.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+placeholder_text = "lowercase_id"
+
+[node name="NameLabel" type="Label" parent="Margin/VBox/Content/EditorColumn/Fields"]
+margin_top = 28.0
+margin_right = 100.0
+margin_bottom = 52.0
+text = "Name"
+
+[node name="NameEdit" type="LineEdit" parent="Margin/VBox/Content/EditorColumn/Fields"]
+margin_left = 104.0
+margin_top = 28.0
+margin_right = 962.0
+margin_bottom = 52.0
+size_flags_horizontal = 3
+
+[node name="MinLabel" type="Label" parent="Margin/VBox/Content/EditorColumn/Fields"]
+margin_top = 56.0
+margin_right = 100.0
+margin_bottom = 80.0
+text = "Min deck size"
+
+[node name="MinDeckSpin" type="SpinBox" parent="Margin/VBox/Content/EditorColumn/Fields"]
+margin_left = 104.0
+margin_top = 56.0
+margin_right = 268.0
+margin_bottom = 80.0
+min_value = 0.0
+max_value = 999.0
+value = 52.0
+
+[node name="MaxLabel" type="Label" parent="Margin/VBox/Content/EditorColumn/Fields"]
+margin_top = 84.0
+margin_right = 100.0
+margin_bottom = 108.0
+text = "Max deck size"
+
+[node name="MaxDeckSpin" type="SpinBox" parent="Margin/VBox/Content/EditorColumn/Fields"]
+margin_left = 104.0
+margin_top = 84.0
+margin_right = 268.0
+margin_bottom = 108.0
+min_value = 0.0
+max_value = 999.0
+value = 60.0
+
+[node name="CopiesLabel" type="Label" parent="Margin/VBox/Content/EditorColumn/Fields"]
+margin_top = 112.0
+margin_right = 100.0
+margin_bottom = 136.0
+text = "Max copies"
+
+[node name="MaxCopiesSpin" type="SpinBox" parent="Margin/VBox/Content/EditorColumn/Fields"]
+margin_left = 104.0
+margin_top = 112.0
+margin_right = 268.0
+margin_bottom = 136.0
+min_value = 1.0
+max_value = 99.0
+value = 3.0
+
+[node name="Lists" type="HBoxContainer" parent="Margin/VBox/Content/EditorColumn"]
+margin_top = 149.0
+margin_right = 962.0
+margin_bottom = 521.0
+size_flags_vertical = 3
+custom_constants/separation = 10
+
+[node name="Objectives" type="VBoxContainer" parent="Margin/VBox/Content/EditorColumn/Lists"]
+margin_right = 476.0
+margin_bottom = 372.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="Margin/VBox/Content/EditorColumn/Lists/Objectives"]
+margin_right = 476.0
+margin_bottom = 19.0
+text = "Objective cards (always banned)"
+
+[node name="ObjectiveList" type="ItemList" parent="Margin/VBox/Content/EditorColumn/Lists/Objectives"]
+margin_top = 23.0
+margin_right = 476.0
+margin_bottom = 337.0
+size_flags_vertical = 3
+
+[node name="Buttons" type="HBoxContainer" parent="Margin/VBox/Content/EditorColumn/Lists/Objectives"]
+margin_top = 341.0
+margin_right = 476.0
+margin_bottom = 372.0
+
+[node name="AddObjective" type="Button" parent="Margin/VBox/Content/EditorColumn/Lists/Objectives/Buttons"]
+margin_right = 41.0
+margin_bottom = 31.0
+text = "Add"
+
+[node name="RemoveObjective" type="Button" parent="Margin/VBox/Content/EditorColumn/Lists/Objectives/Buttons"]
+margin_left = 45.0
+margin_right = 115.0
+margin_bottom = 31.0
+text = "Remove"
+
+[node name="Banned" type="VBoxContainer" parent="Margin/VBox/Content/EditorColumn/Lists"]
+margin_left = 486.0
+margin_right = 962.0
+margin_bottom = 372.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="Margin/VBox/Content/EditorColumn/Lists/Banned"]
+margin_right = 476.0
+margin_bottom = 19.0
+text = "Banned cards"
+
+[node name="BannedList" type="ItemList" parent="Margin/VBox/Content/EditorColumn/Lists/Banned"]
+margin_top = 23.0
+margin_right = 476.0
+margin_bottom = 337.0
+size_flags_vertical = 3
+
+[node name="Buttons" type="HBoxContainer" parent="Margin/VBox/Content/EditorColumn/Lists/Banned"]
+margin_top = 341.0
+margin_right = 476.0
+margin_bottom = 372.0
+
+[node name="AddBanned" type="Button" parent="Margin/VBox/Content/EditorColumn/Lists/Banned/Buttons"]
+margin_right = 41.0
+margin_bottom = 31.0
+text = "Add"
+
+[node name="RemoveBanned" type="Button" parent="Margin/VBox/Content/EditorColumn/Lists/Banned/Buttons"]
+margin_left = 45.0
+margin_right = 115.0
+margin_bottom = 31.0
+text = "Remove"
+
+[node name="ValidationLabel" type="Label" parent="Margin/VBox/Content/EditorColumn"]
+margin_top = 525.0
+margin_right = 962.0
+margin_bottom = 560.0
+autowrap = true
+
+[node name="SaveRow" type="HBoxContainer" parent="Margin/VBox"]
+margin_top = 619.0
+margin_right = 1244.0
+margin_bottom = 650.0
+alignment = 2
+
+[node name="Save" type="Button" parent="Margin/VBox/SaveRow"]
+margin_left = 1182.0
+margin_right = 1244.0
+margin_bottom = 31.0
+text = "Save"
+
+[node name="CardPicker" type="PopupPanel" parent="."]
+
+[node name="Margin" type="MarginContainer" parent="CardPicker"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_constants/margin_left = 12
+custom_constants/margin_top = 12
+custom_constants/margin_right = 12
+custom_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="CardPicker/Margin"]
+margin_left = 12.0
+margin_top = 12.0
+margin_right = 820.0
+margin_bottom = 456.0
+
+[node name="Label" type="Label" parent="CardPicker/Margin/VBox"]
+margin_right = 808.0
+margin_bottom = 19.0
+text = "Add card"
+
+[node name="Search" type="LineEdit" parent="CardPicker/Margin/VBox"]
+margin_top = 23.0
+margin_right = 808.0
+margin_bottom = 47.0
+placeholder_text = "Search cards"
+
+[node name="CardList" type="ItemList" parent="CardPicker/Margin/VBox"]
+margin_top = 51.0
+margin_right = 808.0
+margin_bottom = 413.0
+size_flags_vertical = 3
+
+[node name="Buttons" type="HBoxContainer" parent="CardPicker/Margin/VBox"]
+margin_top = 417.0
+margin_right = 808.0
+margin_bottom = 444.0
+alignment = 2
+
+[node name="CardPickerAdd" type="Button" parent="CardPicker/Margin/VBox/Buttons"]
+margin_left = 720.0
+margin_right = 765.0
+margin_bottom = 27.0
+text = "Add"
+
+[node name="CardPickerClose" type="Button" parent="CardPicker/Margin/VBox/Buttons"]
+margin_left = 769.0
+margin_right = 808.0
+margin_bottom = 27.0
+text = "Close"
+
+[connection signal="pressed" from="Margin/VBox/Content/FormatColumn/FormatButtons/New" to="." method="_on_New_pressed"]
+[connection signal="pressed" from="Margin/VBox/Content/FormatColumn/FormatButtons/Delete" to="." method="_on_Delete_pressed"]
+[connection signal="pressed" from="Margin/VBox/Content/EditorColumn/Lists/Objectives/Buttons/AddObjective" to="." method="_on_AddObjective_pressed"]
+[connection signal="pressed" from="Margin/VBox/Content/EditorColumn/Lists/Objectives/Buttons/RemoveObjective" to="." method="_on_RemoveObjective_pressed"]
+[connection signal="pressed" from="Margin/VBox/Content/EditorColumn/Lists/Banned/Buttons/AddBanned" to="." method="_on_AddBanned_pressed"]
+[connection signal="pressed" from="Margin/VBox/Content/EditorColumn/Lists/Banned/Buttons/RemoveBanned" to="." method="_on_RemoveBanned_pressed"]
+[connection signal="pressed" from="Margin/VBox/SaveRow/Save" to="." method="_on_Save_pressed"]
+[connection signal="pressed" from="CardPicker/Margin/VBox/Buttons/CardPickerAdd" to="." method="_on_CardPickerAdd_pressed"]
+[connection signal="pressed" from="CardPicker/Margin/VBox/Buttons/CardPickerClose" to="." method="_on_CardPickerClose_pressed"]

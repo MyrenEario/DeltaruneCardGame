@@ -1,0 +1,126 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://src/custom/campaign/CampaignStart.gd" type="Script" id=1]
+[ext_resource path="res://src/custom/campaign/DepthBackground.gd" type="Script" id=2]
+[ext_resource path="res://themes/darktheme/fonts/Bangers/Bangers-Regular.ttf" type="DynamicFontData" id=3]
+
+[sub_resource type="DynamicFont" id=1]
+size = 40
+outline_size = 4
+outline_color = Color( 0, 0, 0, 1 )
+use_filter = true
+font_data = ExtResource( 3 )
+
+[node name="CampaignStart" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Base" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color( 0.027451, 0.027451, 0.047059, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Depth" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Voice" type="Label" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -430.0
+margin_top = 20.0
+margin_right = 430.0
+margin_bottom = 210.0
+mouse_filter = 2
+custom_fonts/font = SubResource( 1 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+text = "Who is
+The First Hero,
+The Cage with Human Soul and Parts?"
+align = 1
+valign = 1
+autowrap = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Objective" type="CenterContainer" parent="."]
+margin_top = 216.0
+margin_right = 1280.0
+margin_bottom = 466.0
+mouse_filter = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Options" type="HBoxContainer" parent="."]
+margin_top = 474.0
+margin_right = 1280.0
+margin_bottom = 642.0
+mouse_filter = 2
+custom_constants/separation = 14
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Recommendations" type="ScrollContainer" parent="."]
+visible = false
+margin_left = 40.0
+margin_top = 216.0
+margin_right = 1240.0
+margin_bottom = 646.0
+mouse_filter = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Grid" type="GridContainer" parent="Recommendations"]
+margin_right = 1200.0
+margin_bottom = 430.0
+size_flags_horizontal = 3
+custom_constants/vseparation = 12
+custom_constants/hseparation = 12
+columns = 6
+
+[node name="DeckLabel" type="Label" parent="."]
+visible = false
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -200.0
+margin_top = 654.0
+margin_right = 200.0
+margin_bottom = 690.0
+mouse_filter = 2
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Skip" type="Button" parent="."]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -120.0
+margin_top = -48.0
+margin_right = -12.0
+margin_bottom = -12.0
+text = "Skip"
+__meta__ = {
+"_edit_use_anchors_": false
+}
