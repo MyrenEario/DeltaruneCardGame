@@ -45,10 +45,15 @@ static func from_stored_deck(stored: Dictionary) -> Dictionary:
 		return {}
 	var deck: Dictionary = stored.duplicate(true)
 	var stored_cards = stored.get("cards", {})
+	var stored_names = stored.get("card_names", {})
 	var cards := {}
 	if typeof(stored_cards) == TYPE_DICTIONARY:
 		for ref in stored_cards:
 			var card_name: String = cfc.resolve_card_name(str(ref))
+			# Fall back to the stored name if the id is no longer in the card
+			# set (e.g. the id changed after the deck was saved).
+			if card_name.empty() and typeof(stored_names) == TYPE_DICTIONARY:
+				card_name = str(stored_names.get(str(ref), ""))
 			if card_name.empty():
 				card_name = str(ref)
 			cards[card_name] = int(cards.get(card_name, 0)) + int(stored_cards[ref])

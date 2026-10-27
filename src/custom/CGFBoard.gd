@@ -8,6 +8,7 @@ const AI_CONTROLLER_SCRIPT = preload("res://src/custom/ai/AIController.gd")
 const CAMPAIGN_DATA_SCRIPT = preload("res://src/custom/campaign/CampaignData.gd")
 const CAMPAIGN_PROGRESS_SCRIPT = preload(
 		"res://src/custom/campaign/CampaignProgress.gd")
+const BATTLE_ARROW_SCENE = preload("res://src/core/Card/TargetingArrow.tscn")
 
 var turn_manager: TurnManager = null
 var selected_card_for_action = null
@@ -19,6 +20,13 @@ var _opening_deckbuilder := false
 var campaign_match := false
 var campaign_opponent_id := ""
 var campaign_save_path := CAMPAIGN_PROGRESS_SCRIPT.SAVE_PATH
+var battle_log_messages := []
+var _battle_arrow = null
+var _arrow_timer = null
+
+onready var _battle_log_scroll = get_node_or_null("BattleLog/VBox/Scroll")
+onready var _battle_log_messages = get_node_or_null(
+		"BattleLog/VBox/Scroll/Messages")
 
 func _ready() -> void:
 	counters = $Counters
@@ -52,6 +60,14 @@ func _ready() -> void:
 		else:
 			call_deferred("_start_pending_campaign_match")
 	$DeckBuilderPopup.connect('popup_hide', self, '_on_DeckBuilder_hide')
+	_battle_arrow = BATTLE_ARROW_SCENE.instance()
+	_battle_arrow.name = "BattleArrow"
+	add_child(_battle_arrow)
+	_battle_arrow.visible = false
+	_arrow_timer = Timer.new()
+	_arrow_timer.one_shot = true
+	add_child(_arrow_timer)
+	_arrow_timer.connect("timeout", self, "_hide_battle_arrow")
 
 func _create_format_tracker() -> void:
 	format_tracker = FORMAT_TRACKER_SCENE.instance()
@@ -79,6 +95,11 @@ func start_match(format_id: String, player1_deck: Dictionary,
 		player2_deck: Dictionary, ai_player_id := -1) -> void:
 	if match_started:
 		return
+	# A fresh seed for every match, so rematches/replays are never predictable.
+	if not cfc.ut:
+		cfc.game_rng_seed = CFUtils.generate_random_seed()
+		if has_node("SeedLabel"):
+			$SeedLabel.text = "Game Seed is: " + cfc.game_rng_seed
 	_clear_deck($Deck)
 	_clear_deck($Discard)
 	_clear_deck($Hand)
@@ -168,7 +189,10 @@ func _load_deck_into(pile: Pile, deck: Dictionary) -> void:
 				continue
 			pile.add_child(card)
 			card._determine_idle_state()
-	pile.shuffle_cards()
+	# Synchronous shuffle: the opening hand is drawn immediately after
+	# start_match(), so the animated shuffle (which reorders later) would let
+	# the draw use the deck file's insertion order.
+	pile.shuffle_cards(false)
 
 
 func _on_match_setup_deckbuilder() -> void:
@@ -326,7 +350,7 @@ func select_card_for_action(card) -> void:
 		return
 	selected_card_for_action = card
 	if has_node("ActionContainer"):
-		var card_is_item = card.has_method("is_item") and card.is_item()
+		var card_is_item = card.is_item()
 		var attack_visible = not card_is_item and _card_action_power(card, "Attack") > 0
 		var control_visible = not card_is_item and _card_action_power(card, "Control") > 0
 		var spare_visible = not card_is_item and _card_action_power(card, "Spare") > 0
@@ -340,7 +364,7 @@ func select_card_for_action(card) -> void:
 
 
 func _card_action_power(card, action_type: String) -> int:
-	if not is_instance_valid(card) or not card.has_method("get_action_value"):
+	if not is_instance_valid(card):
 		return 0
 	return card.get_action_value(action_type)
 
@@ -444,3 +468,84 @@ func _on_DeckBuilder_hide() -> void:
 func _on_BackToMain_pressed() -> void:
 	cfc.quit_game()
 	get_tree().change_scene("res://src/custom/MainMenu.tscn")
+
+
+# --- Battle log -----------------------------------------------------------
+
+func add_log_message(message: String) -> void:
+	battle_log_messages.append(message)
+	if not is_instance_valid(_battle_log_messages):
+		return
+	var label := Label.new()
+	label.text = message
+	label.autowrap = true
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_battle_log_messages.add_child(label)
+	call_deferred("_scroll_log_bottom")
+
+
+func _scroll_log_bottom() -> void:
+	if is_instance_valid(_battle_log_scroll):
+		_battle_log_scroll.scroll_vertical = 1000000
+
+
+func get_player_name(player_id: int) -> String:
+	if campaign_match:
+		var campaign = CAMPAIGN_DATA_SCRIPT.load_campaign()
+		var opponent = CAMPAIGN_DATA_SCRIPT.find_opponent(
+				campaign, campaign_opponent_id)
+		if player_id == 1 and not opponent.empty():
+			return str(opponent.get("name", "Opponent"))
+	return "Player " + str(player_id + 1)
+
+
+func log_card_played(card) -> void:
+	if not is_instance_valid(card):
+		return
+	add_log_message("%s played %s" % [
+			get_player_name(card.original_owner), card.canonical_name])
+
+
+# --- Battle arrows --------------------------------------------------------
+
+func _card_center(card) -> Vector2:
+	if not is_instance_valid(card):
+		return Vector2.ZERO
+	# Board cards use their placement slot, so a card that is still tweening
+	# from the hand (or its previous slot) does not skew the arrow.
+	if card.get_parent() == self and is_instance_valid(card._placement_slot):
+		return card._placement_slot.rect_global_position \
+				+ card._placement_slot.rect_size / 2
+	return card.targeting_arrow.card_center()
+
+
+func show_battle_arrow(card, target, color: Color) -> void:
+	if not is_instance_valid(_battle_arrow):
+		return
+	if is_instance_valid(_arrow_timer):
+		_arrow_timer.stop()
+	_battle_arrow.draw_between(_card_center(card), _card_center(target), color)
+
+
+func hide_battle_arrow() -> void:
+	if is_instance_valid(_arrow_timer):
+		_arrow_timer.stop()
+	if is_instance_valid(_battle_arrow):
+		_battle_arrow.hide_arrow()
+
+
+func _hide_battle_arrow() -> void:
+	hide_battle_arrow()
+
+
+func show_cost_arrow(source, played) -> void:
+	if not is_instance_valid(_battle_arrow):
+		return
+	if not is_instance_valid(source) or not is_instance_valid(played):
+		return
+	_battle_arrow.draw_between(_card_center(source), _card_center(played),
+			Color(1, 1, 1, 1))
+	if is_instance_valid(_arrow_timer):
+		var is_ai_play: bool = is_instance_valid(ai_controller) \
+				and played.original_owner == ai_controller.player_id
+		_arrow_timer.start(0.5 if is_ai_play else 1.0)

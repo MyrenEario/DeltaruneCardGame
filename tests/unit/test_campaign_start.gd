@@ -174,3 +174,47 @@ func test_zoom_copy_alpha_stays_in_range():
 	for instance in depth._zoom_instances:
 		var alpha = instance["node"].modulate.a
 		assert_between(alpha, 0.0, 1.0, "Alpha stays valid")
+
+
+func test_options_follow_a_renamed_card():
+	var scene = _open_scene()
+	yield(yield_for(0.3), YIELD)
+	var card_id := str(scene.STEPS[0]["options"][2])
+	var old_name := cfc.resolve_card_name(card_id)
+	assert_eq(old_name, "Variant 1 Vessel",
+			"First hero's third option is the current Vessel name")
+	assert_true("Variant 1 Vessel" in scene.get_options(),
+			"Option shows the current name")
+	var props = cfc.card_definitions[old_name]
+	cfc.card_definitions.erase(old_name)
+	cfc.card_definitions["Renamed Vessel"] = props
+	cfc.rebuild_card_id_index()
+	assert_true("Renamed Vessel" in scene.get_options(),
+			"Option resolves through the stable id after a rename")
+	cfc.card_definitions.erase("Renamed Vessel")
+	cfc.card_definitions[old_name] = props
+	cfc.rebuild_card_id_index()
+
+
+func test_finished_deck_is_saved_as_campaign_player_deck():
+	var scene = _open_scene()
+	yield(yield_for(0.3), YIELD)
+	scene._deck = ["Kris", "Kris", "Susie", "Susie", "Ralsei"]
+	var deck_name: String = scene._save_campaign_deck()
+	assert_true(deck_name.begins_with("campaign_player_deck"),
+			"Deck is saved with the campaign_player_deck name")
+	var path: String = CFConst.DECKS_PATH + deck_name + ".json"
+	var dir := Directory.new()
+	assert_true(dir.file_exists(path), "Deck file written to user://Decks")
+	var file := File.new()
+	assert_eq(file.open(path, File.READ), OK)
+	var parsed = JSON.parse(file.get_as_text())
+	file.close()
+	assert_eq(parsed.error, OK)
+	var deck := DeckLoader.from_stored_deck(parsed.result)
+	assert_eq(int(deck.get("total", 0)), 5)
+	assert_eq(int(deck.cards.get("Kris", 0)), 2)
+	assert_eq(int(deck.cards.get("Susie", 0)), 2)
+	assert_eq(int(deck.cards.get("Ralsei", 0)), 1)
+	assert_eq(str(deck.get("name", "")), deck_name)
+	dir.remove(path)

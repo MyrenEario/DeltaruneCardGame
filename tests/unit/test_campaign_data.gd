@@ -51,38 +51,14 @@ func test_campaign_portraits_exist() -> void:
 		file.close()
 
 
-func test_campaign_hero_cards_exist() -> void:
-	for opponent in CAMPAIGN_DATA.get_opponents(campaign):
-		for hero_card in opponent.get("hero_cards", []):
-			assert_true(
-					card_definitions.has(str(hero_card)),
-					"Unknown hero card for %s: %s" % [
-						opponent.get("name", ""),
-						hero_card,
-					])
-
-
-func test_king_deck_contains_three_hero_cards() -> void:
-	var king := CAMPAIGN_DATA.find_opponent(campaign, "king")
-	assert_false(king.empty())
-	var deck := CAMPAIGN_DATA.load_opponent_deck(king)
-	assert_false(deck.empty())
-	assert_eq(int(deck.get("total", 0)), 3)
-	assert_eq(deck.get("cards", {}).size(), 3)
-	for hero_card in king.get("hero_cards", []):
-		assert_eq(int(deck.cards.get(str(hero_card), 0)), 1)
-
-
-func test_all_opponent_decks_load_and_contain_hero_cards() -> void:
+func test_all_opponent_decks_load() -> void:
 	for opponent in CAMPAIGN_DATA.get_opponents(campaign):
 		var deck := CAMPAIGN_DATA.load_opponent_deck(opponent)
 		assert_false(deck.empty(), "Missing deck for " + str(opponent.get("id", "")))
-		var cards: Dictionary = deck.get("cards", {})
-		for hero_card in opponent.get("hero_cards", []):
-			assert_true(cards.has(str(hero_card)),
-					"Deck %s missing hero card %s" % [
-						opponent.get("id", ""),
-						hero_card,
+		for card_name in deck.get("cards", {}):
+			assert_true(card_definitions.has(str(card_name)),
+					"Unknown card in deck %s: %s" % [
+						opponent.get("id", ""), card_name,
 					])
 
 

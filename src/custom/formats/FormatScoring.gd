@@ -31,6 +31,11 @@ static func best_cost(objectives: Array, zone) -> int:
 
 static func _occupied_cards(zone) -> Array:
 	var cards := []
+	if typeof(zone) == TYPE_ARRAY:
+		for card in zone:
+			if is_instance_valid(card):
+				cards.append(card)
+		return cards
 	if not is_instance_valid(zone):
 		return cards
 	if zone.has_method("get_all_slots"):

@@ -67,6 +67,9 @@ var NMAP: Dictionary
 var pending_campaign_match := {}
 # The deck the player built during the campaign intro (card name -> count).
 var campaign_player_deck := {}
+# Name of the deck saved for the campaign intro (campaign_player_deckX), so the
+# campaign screen can select it automatically.
+var campaign_player_deck_name := ""
 # The card actively being dragged
 var card_drag_ongoing: Card = null
 # Switch used for seeing debug info

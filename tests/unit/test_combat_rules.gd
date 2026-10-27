@@ -77,7 +77,7 @@ func test_knockout_increases_attacker_lv():
 	assert_eq(attacker.get_lv(), original_lv + 1, "Attacker gained one LV")
 
 func test_lv_gain_breaks_control_above_control_value():
-	var controller = _make_card("December Holiday Lancer")
+	var controller = _make_card("Lancer")
 	var target = _make_card("Bloxer")
 	var tm = cfc.NMAP.board.turn_manager
 	_place_in_zone(target, p2, 1)
@@ -94,7 +94,7 @@ func test_lv_gain_breaks_control_above_control_value():
 	assert_eq(target._placement_slot.owner_grid, p2, "Card is back in its owner's zone")
 
 func test_lv_gain_equal_to_control_keeps_control():
-	var controller = _make_card("December Holiday Lancer")
+	var controller = _make_card("Lancer")
 	var target = _make_card("Bloxer")
 	var tm = cfc.NMAP.board.turn_manager
 	target.properties["LV"] = 1

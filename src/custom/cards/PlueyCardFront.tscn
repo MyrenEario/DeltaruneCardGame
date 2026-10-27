@@ -116,11 +116,11 @@ margin_top = 2.0
 margin_right = 146.0
 margin_bottom = 20.0
 rect_min_size = Vector2( 20, 15 )
+size_flags_horizontal = 3
 custom_colors/font_color = Color( 0.75, 0.85, 1, 1 )
 custom_fonts/font = SubResource( 3 )
 text = "0"
 align = 2
-size_flags_horizontal = 3
 
 [node name="Name" type="Label" parent="Margin/CardText/Header/HeaderText"]
 margin_top = 23.0
@@ -143,15 +143,18 @@ mouse_filter = 2
 expand = true
 stretch_mode = 6
 
-[node name="Type" type="Label" parent="Margin/CardText"]
-margin_top = 109.0
-margin_right = 146.0
-margin_bottom = 132.0
+[node name="Type" type="Label" parent="Margin/CardText/Illustration"]
+margin_left = 76.0
+margin_top = 47.0
+margin_right = 218.0
+margin_bottom = 70.0
 rect_min_size = Vector2( 142, 14 )
+rect_scale = Vector2( 0.5, 0.5 )
+mouse_filter = 2
 size_flags_vertical = 1
 text = "Type"
-align = 1
-valign = 1
+align = 2
+valign = 2
 autowrap = true
 uppercase = true
 
@@ -161,22 +164,21 @@ margin_top = 135.0
 margin_right = 146.0
 margin_bottom = 148.0
 rect_min_size = Vector2( 142, 10 )
-mouse_filter = 2
 custom_colors/font_color = Color( 0.82, 0.62, 1, 1 )
 align = 1
 valign = 1
 autowrap = true
 
 [node name="Tags" type="RichTextLabel" parent="Margin/CardText"]
-margin_top = 134.0
+margin_top = 109.0
 margin_right = 146.0
-margin_bottom = 204.0
+margin_bottom = 179.0
 rect_min_size = Vector2( 142, 70 )
 mouse_filter = 2
 scroll_active = false
 
 [node name="Abilities" type="RichTextLabel" parent="Margin/CardText"]
-margin_top = 206.0
+margin_top = 181.0
 margin_right = 146.0
 margin_bottom = 219.0
 mouse_filter = 2

@@ -5,26 +5,13 @@ const ACTION_TYPES := ["Attack", "Control", "Spare"]
 
 
 static func get_player_zone(board, player_id: int):
-	if not is_instance_valid(board) or not board.has_method("get_player_zone"):
-		return null
 	return board.get_player_zone(player_id)
 
 
 static func action_power(card, action_type: String) -> int:
 	if not is_instance_valid(card):
 		return 0
-	if card.has_method("get_action_value"):
-		return card.get_action_value(action_type)
-	var action_key := str(card.properties.get("ActionType", "None"))
-	if action_type == "Attack":
-		action_key = "Fight" if action_key == "Fight" else action_key
-	elif action_type == "Spare":
-		action_key = "Mercy" if action_key == "Mercy" else action_key
-	if action_key != action_type and not (
-			(action_type == "Attack" and action_key == "Fight")
-			or (action_type == "Spare" and action_key == "Mercy")):
-		return 0
-	return int(card.properties.get("AT", 0))
+	return int(card.get_action_value(action_type))
 
 
 static func is_card_available(card, active_player: int) -> bool:
@@ -43,7 +30,7 @@ static func get_attack_targets(card, active_player: int, board) -> Array:
 	if action_power(card, "Attack") <= 0:
 		return []
 	var opponent := 1 - active_player
-	if card.has_method("can_attack_player") and not card.can_attack_player(opponent):
+	if not card.can_attack_player(opponent):
 		return []
 	var targets := []
 	for target in get_zone_cards(board, opponent):
@@ -57,16 +44,16 @@ static func get_attack_targets(card, active_player: int, board) -> Array:
 	return targets
 
 
-static func get_control_targets(card, active_player: int, board) -> Array:
+static func get_control_targets(card, active_player: int, board,
+		ignore_room := false) -> Array:
 	var control_power := action_power(card, "Control")
 	if control_power <= 0:
 		return []
 	var opponent := 1 - active_player
 	var active_zone = get_player_zone(board, active_player)
-	var has_room = active_zone != null and active_zone.has_method("count_available_slots") \
-			and active_zone.count_available_slots() > 0
+	var has_room = active_zone != null and active_zone.count_available_slots() > 0
 	var controlled = card.controlled_card if "controlled_card" in card else null
-	if not has_room and not is_instance_valid(controlled):
+	if not ignore_room and not has_room and not is_instance_valid(controlled):
 		return []
 	var targets := []
 	for target in get_zone_cards(board, opponent):
@@ -76,8 +63,7 @@ static func get_control_targets(card, active_player: int, board) -> Array:
 			continue
 		if "knocked_out_turns" in target and target.knocked_out_turns > 0:
 			continue
-		var weakens = target.has_method("is_weak_to") \
-				and target.is_weak_to("Control", card)
+		var weakens = target.is_weak_to("Control", card)
 		var current_controller = target.controlling_card \
 				if "controlling_card" in target else null
 		if is_instance_valid(current_controller) and current_controller != card:
@@ -88,15 +74,15 @@ static func get_control_targets(card, active_player: int, board) -> Array:
 			continue
 		# Uncontrolled: a Control weakness always works, otherwise the usual
 		# LV limit.
-		if weakens or (target.has_method("get_lv") and target.get_lv() <= control_power):
+		if weakens or target.get_lv() <= control_power:
 			targets.append(target)
 	return targets
 
 
 static func _control_strength(card) -> int:
-	if is_instance_valid(card) and card.has_method("get_control_value"):
-		return card.get_control_value()
-	return 0
+	if not is_instance_valid(card):
+		return 0
+	return card.get_control_value()
 
 
 static func get_spare_targets(card, active_player: int, board) -> Array:
@@ -131,7 +117,7 @@ static func get_spare_targets(card, active_player: int, board) -> Array:
 
 
 static func get_equip_targets(card, active_player: int, board) -> Array:
-	if not is_instance_valid(card) or not card.has_method("is_item") or not card.is_item():
+	if not is_instance_valid(card) or not card.is_item():
 		return []
 	if not is_card_available(card, active_player):
 		return []
@@ -139,7 +125,7 @@ static func get_equip_targets(card, active_player: int, board) -> Array:
 	for target in get_zone_cards(board, active_player):
 		if not is_instance_valid(target):
 			continue
-		if not target.has_method("is_character") or not target.is_character():
+		if not target.is_character():
 			continue
 		if "knocked_out_turns" in target and target.knocked_out_turns > 0:
 			continue
@@ -167,7 +153,7 @@ static func get_action_targets(card, action_type: String, active_player: int, bo
 static func get_legal_moves(card, active_player: int, board) -> Array:
 	if not is_card_available(card, active_player):
 		return []
-	if card.has_method("is_item") and card.is_item():
+	if card.is_item():
 		var equip_targets := get_equip_targets(card, active_player, board)
 		if not equip_targets.empty():
 			return [{"action_type": "Equip", "targets": equip_targets}]
@@ -206,7 +192,7 @@ static func choose_target(action_type: String, targets: Array, active_player: in
 
 static func get_zone_cards(board, player_id: int) -> Array:
 	var zone = get_player_zone(board, player_id)
-	if not is_instance_valid(zone) or not zone.has_method("get_all_cards"):
+	if not is_instance_valid(zone):
 		return []
 	return zone.get_all_cards()
 
@@ -251,16 +237,12 @@ static func _pick_highest_lv(targets: Array, generator):
 
 
 static func _attack_value(card) -> int:
-	if is_instance_valid(card) and card.has_method("get_attack_value"):
-		return card.get_attack_value()
-	if is_instance_valid(card) and "properties" in card:
-		return int(card.properties.get("AT", 0))
-	return 0
+	if not is_instance_valid(card):
+		return 0
+	return card.get_attack_value()
 
 
 static func _lv_value(card) -> int:
-	if is_instance_valid(card) and card.has_method("get_lv"):
-		return card.get_lv()
-	if is_instance_valid(card) and "properties" in card:
-		return int(card.properties.get("LV", 0))
-	return 0
+	if not is_instance_valid(card):
+		return 0
+	return card.get_lv()

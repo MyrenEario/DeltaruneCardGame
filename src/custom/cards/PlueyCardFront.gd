@@ -106,6 +106,11 @@ func _ready() -> void:
 				original_font_sizes[label] = 14
 
 	_setup_vertical_flow()
+	var illustration = find_node("Illustration")
+	if illustration and not illustration.is_connected(
+			"resized", self, "_position_type_label"):
+		illustration.connect("resized", self, "_position_type_label")
+	call_deferred("_position_type_label")
 	call_deferred("_load_visuals")
 
 
@@ -122,6 +127,20 @@ func _setup_vertical_flow() -> void:
 	var abilities = card_labels.get("Abilities")
 	if abilities:
 		abilities.size_flags_vertical = Control.SIZE_FILL
+
+
+# Keeps the Type tag in the illustration's bottom-right while the image grows
+# or shrinks (the image is the only element that expands vertically).
+func _position_type_label() -> void:
+	var illustration = find_node("Illustration")
+	var type_label = card_labels.get("Type")
+	if not is_instance_valid(illustration) or not is_instance_valid(type_label):
+		return
+	type_label.rect_size = type_label.rect_min_size
+	var scaled_size: Vector2 = type_label.rect_size * type_label.rect_scale
+	type_label.rect_position = Vector2(
+			illustration.rect_size.x - scaled_size.x - 2,
+			illustration.rect_size.y - scaled_size.y - 2)
 
 # We override the framework's setter so we can:
 # * strip the prefix from the Name (it is shown in its own Prefix label)

@@ -19,6 +19,8 @@ var stack_below = null
 var stack_above = null
 var _pending_stack_below = null
 var _pending_cost_below = null
+# Card that gave a cost reduction for the current play (for the white arrow).
+var _cost_arrow_source = null
 
 const ROLE_SPLAY_OFFSET := 56.0
 
@@ -30,16 +32,13 @@ func _ready() -> void:
 # instead of the framework's default plain-text array label.
 func refresh_property_label(property: String) -> void:
 	if property == "WeaknessType" or property == "Weakness":
-		if is_instance_valid(card_front) and card_front.has_method("_apply_weakness"):
-			card_front._apply_weakness()
+		card_front._apply_weakness()
 		return
 	if property == "Tags" or property == "SpecificTags":
-		if is_instance_valid(card_front) and card_front.has_method("_apply_tags"):
-			card_front._apply_tags()
+		card_front._apply_tags()
 		return
 	if property == "TagEqualities" or property == "TagImplications":
-		if is_instance_valid(card_front) and card_front.has_method("_apply_tag_relations"):
-			card_front._apply_tag_relations()
+		card_front._apply_tag_relations()
 		return
 	if property == "LV":
 		_set_combat_label(property, get_lv())
@@ -57,7 +56,12 @@ func _set_combat_label(property: String, value: int) -> void:
 		return
 	var label_node = card_front.card_labels[property]
 	if is_instance_valid(label_node):
-		card_front.set_label_text(label_node, str(max(0, value)))
+		var text := str(value)
+		if property == "LV":
+			text = str(max(0, value))
+		elif value == 0:
+			text = ""
+		card_front.set_label_text(label_node, text)
 
 func _numeric_property(property: String) -> int:
 	var value = properties.get(property, 0)
@@ -67,6 +71,16 @@ func _numeric_property(property: String) -> int:
 	if value_type != TYPE_INT and value_type != TYPE_REAL:
 		return 0
 	return int(max(0, int(value)))
+
+# Like _numeric_property, but keeps negative modifiers (used for AT/HP).
+func _raw_numeric_property(property: String) -> int:
+	var value = properties.get(property, 0)
+	if value == null:
+		return 0
+	var value_type = typeof(value)
+	if value_type != TYPE_INT and value_type != TYPE_REAL:
+		return 0
+	return int(value)
 
 func _action_key(action_name) -> String:
 	match str(action_name):
@@ -87,50 +101,107 @@ func get_control_value() -> int:
 func get_spare_value() -> int:
 	return get_action_value("Spare")
 
+# A stack acts as one card: each action strength is the maximum across the
+# base character and every role fused on top of it.
 func get_action_value(action_name) -> int:
 	var key := _action_key(action_name)
 	if key == "":
 		return 0
 	var value := 0
-	if _action_key(properties.get("ActionType", "None")) == key:
-		value = _numeric_property("AT")
-	for item in get_equipped_items():
+	var found := false
+	for card in get_stack_cards():
+		var own := _own_action_value(card, key)
+		if not found or own > value:
+			found = true
+			value = own
+	return value
+
+
+func _own_action_value(card, key: String) -> int:
+	if not is_instance_valid(card):
+		return 0
+	var value := 0
+	if _action_key(card.properties.get("ActionType", "None")) == key:
+		value = card._raw_numeric_property("AT")
+	for item in card.get_equipped_items():
 		value += item.get_equipment_action_bonus(key)
 	return value
+
 
 func get_defense_value(action_name) -> int:
 	var key := _action_key(action_name)
 	if key == "":
 		return 0
 	var value := 0
-	if _action_key(properties.get("DefenseType", "None")) == key:
-		value = _numeric_property("HP")
-	for item in get_equipped_items():
+	var found := false
+	for card in get_stack_cards():
+		var own := _own_defense_value(card, key)
+		if not found or own > value:
+			found = true
+			value = own
+	return value
+
+
+func _own_defense_value(card, key: String) -> int:
+	if not is_instance_valid(card):
+		return 0
+	var value := 0
+	if _action_key(card.properties.get("DefenseType", "None")) == key:
+		value = card._raw_numeric_property("HP")
+	for item in card.get_equipped_items():
 		value += item.get_equipment_defense_bonus(key)
 	return value
 
 func get_equipment_action_bonus(key: String) -> int:
 	if _action_key(properties.get("ActionType", "None")) == key:
-		return _numeric_property("AT")
+		return _raw_numeric_property("AT")
 	return 0
 
 func get_equipment_defense_bonus(key: String) -> int:
 	if _action_key(properties.get("DefenseType", "None")) == key:
-		return _numeric_property("HP")
+		return _raw_numeric_property("HP")
 	return 0
 
 func get_displayed_action_value() -> int:
-	if _action_key(properties.get("ActionType", "None")) == "":
-		return _numeric_property("AT")
-	return get_action_value(properties.get("ActionType", "None"))
+	var key := _action_key(properties.get("ActionType", "None"))
+	if key == "":
+		var value := 0
+		var found := false
+		for card in get_stack_cards():
+			if not is_instance_valid(card):
+				continue
+			var own: int = card._raw_numeric_property("AT")
+			if not found or own > value:
+				found = true
+				value = own
+		return value
+	return get_action_value(key)
 
 func get_displayed_defense_value() -> int:
-	if _action_key(properties.get("DefenseType", "None")) == "":
-		return _numeric_property("HP")
-	return get_defense_value(properties.get("DefenseType", "None"))
+	var key := _action_key(properties.get("DefenseType", "None"))
+	if key == "":
+		var value := 0
+		var found := false
+		for card in get_stack_cards():
+			if not is_instance_valid(card):
+				continue
+			var own: int = card._raw_numeric_property("HP")
+			if not found or own > value:
+				found = true
+				value = own
+		return value
+	return get_defense_value(key)
 
+# A stack's level is the highest level among the base character and its roles.
 func get_lv() -> int:
-	return _numeric_property("LV") + lv_bonus
+	var value := 0
+	for card in get_stack_cards():
+		if not is_instance_valid(card):
+			continue
+		var own: int = card._numeric_property("LV") + card.lv_bonus
+		if own > value:
+			value = own
+	return value
 
 func gain_lv(amount: int = 1) -> void:
 	if amount <= 0:
@@ -141,8 +212,6 @@ func gain_lv(amount: int = 1) -> void:
 
 func _check_control_break() -> void:
 	if not controlling_card or not is_instance_valid(controlling_card):
-		return
-	if not controlling_card.has_method("get_control_value"):
 		return
 	if get_lv() > controlling_card.get_control_value():
 		return_to_owner()
@@ -197,7 +266,7 @@ func is_same_character_variant(other) -> bool:
 		return false
 	if not is_instance_valid(other):
 		return false
-	if not other.has_method("is_base_character") or not other.is_base_character():
+	if not other.is_base_character():
 		return false
 	var name := _name_tag(self)
 	return name != "" and name == _name_tag(other)
@@ -213,7 +282,7 @@ func _stack_root():
 func can_stack_on(below_card) -> bool:
 	if not is_instance_valid(below_card) or below_card == self:
 		return false
-	if not below_card.has_method("is_character") or not below_card.is_character():
+	if not below_card.is_character():
 		return false
 	if "knocked_out_turns" in below_card and below_card.knocked_out_turns > 0:
 		return false
@@ -221,17 +290,15 @@ func can_stack_on(below_card) -> bool:
 		return true
 	if not is_role_card():
 		return false
-	if not below_card.has_method("get_stack_cards"):
-		return false
 	var root = below_card._stack_root()
-	return root.has_method("is_base_character") and root.is_base_character()
+	return root.is_base_character()
 
 # Character tag equalities can reduce the cost when a base character is played
 # onto another card, even when they will not merge.
 func can_use_for_cost_reduction(below_card) -> bool:
 	if not is_character() or not is_instance_valid(below_card):
 		return false
-	if not below_card.has_method("is_character") or not below_card.is_character():
+	if not below_card.is_character():
 		return false
 	return _matching_tag_count(below_card) > 0
 
@@ -240,7 +307,7 @@ func can_use_for_cost_reduction(below_card) -> bool:
 func can_use_for_cost_adjustment(below_card) -> bool:
 	if not is_character() or not is_instance_valid(below_card):
 		return false
-	if not below_card.has_method("is_character") or not below_card.is_character():
+	if not below_card.is_character():
 		return false
 	return _matching_tag_count(below_card) > 0 \
 			or _opposite_matching_tag_count(below_card) > 0
@@ -270,6 +337,7 @@ func stack_on(below_card) -> bool:
 	if is_instance_valid(_placement_slot):
 		_placement_slot.occupying_card = self
 	_arrange_stack()
+	refresh_combat_stats()
 	return true
 
 # Removes this card from its stack, keeping the remaining cards linked.
@@ -291,6 +359,7 @@ func detach_from_stack() -> void:
 		_placement_slot.occupying_card = remaining_top
 	if is_instance_valid(remaining_top):
 		remaining_top._arrange_stack()
+		remaining_top.refresh_combat_stats()
 
 func _arrange_stack() -> void:
 	if not is_instance_valid(_placement_slot):
@@ -314,14 +383,14 @@ func get_equipped_items() -> Array:
 	for card in attachments:
 		if not is_instance_valid(card):
 			continue
-		if not card.has_method("is_item") or not card.is_item():
+		if not card.is_item():
 			continue
 		if card.equipped_to == self:
 			items.append(card)
 	return items
 
 func equip_item(item) -> bool:
-	if not is_instance_valid(item) or not item.has_method("is_item") or not item.is_item():
+	if not is_instance_valid(item) or not item.is_item():
 		return false
 	if not is_character():
 		return false
@@ -353,6 +422,11 @@ func common_post_move_scripts(new_host: String, old_host: String, move_tags: Arr
 		_pending_stack_below = null
 		if get_parent() == cfc.NMAP.board and is_instance_valid(_placement_slot):
 			stack_on(below)
+	if is_instance_valid(_cost_arrow_source):
+		var arrow_source = _cost_arrow_source
+		_cost_arrow_source = null
+		if get_parent() == cfc.NMAP.board:
+			cfc.NMAP.board.show_cost_arrow(arrow_source, self)
 	.common_post_move_scripts(new_host, old_host, move_tags)
 
 # Cost rules:
@@ -389,9 +463,7 @@ func _cost_penalty_from(below_card) -> int:
 	return penalty
 
 func _card_lv(card) -> int:
-	if card.has_method("get_lv"):
-		return card.get_lv()
-	return int(card.properties.get("LV", 0))
+	return card.get_lv()
 
 func _cost_adjustment_amount(weight: float, below_lv: int) -> int:
 	if weight == 0.5:
@@ -494,11 +566,8 @@ func _all_specific_tags(card) -> Array:
 	var tags := []
 	if not is_instance_valid(card):
 		return tags
-	if card.has_method("get_stack_cards"):
-		for stacked in card.get_stack_cards():
-			tags += _own_specific_tags(stacked)
-	else:
-		tags += _own_specific_tags(card)
+	for stacked in card.get_stack_cards():
+		tags += _own_specific_tags(stacked)
 	return tags
 
 func _own_specific_tags(card) -> Array:
@@ -508,7 +577,7 @@ func _own_specific_tags(card) -> Array:
 	var props = card.properties
 	if props.has("SpecificTags") and props["SpecificTags"] is Array:
 		tags += props["SpecificTags"]
-	if card.has_method("is_character") and card.is_character():
+	if card.is_character():
 		var name_tag := _name_tag(card)
 		if name_tag != "":
 			tags.append(name_tag)
@@ -529,11 +598,8 @@ func _all_tags(card) -> Array:
 	var tags: Array = []
 	if not is_instance_valid(card):
 		return tags
-	if card.has_method("get_stack_cards"):
-		for stacked in card.get_stack_cards():
-			tags += _own_tags(stacked)
-	else:
-		tags += _own_tags(card)
+	for stacked in card.get_stack_cards():
+		tags += _own_tags(stacked)
 	return tags
 
 func _own_tags(card) -> Array:
@@ -580,7 +646,7 @@ func _collect_tag_relations() -> Dictionary:
 	var board = null
 	if cfc.NMAP.has("board"):
 		board = cfc.NMAP.board
-	if board and board.has_method("get_all_cards"):
+	if board:
 		for card in board.get_all_cards():
 			if not is_instance_valid(card) or card == self:
 				continue
@@ -605,6 +671,7 @@ func pay_play_costs(below_card = null) -> void:
 func common_pre_move_scripts(new_host: Node, old_host: Node, move_tags: Array) -> Node:
 	_pending_stack_below = null
 	_pending_cost_below = null
+	_cost_arrow_source = null
 	if old_host == cfc.NMAP.board:
 		var target_slot = get_potential_placement_slot()
 		var stack_target = null
@@ -635,6 +702,7 @@ func common_pre_move_scripts(new_host: Node, old_host: Node, move_tags: Array) -
 					_pending_cost_below = target_card
 				elif can_use_for_cost_adjustment(target_card):
 					_pending_cost_below = target_card
+					_cost_arrow_source = target_card
 					slot.set_highlight(false)
 					slot = null
 				else:
@@ -648,6 +716,7 @@ func common_pre_move_scripts(new_host: Node, old_host: Node, move_tags: Array) -
 			if not can_afford(_pending_cost_below):
 				_pending_stack_below = null
 				_pending_cost_below = null
+				_cost_arrow_source = null
 				slot.set_highlight(false)
 				return old_host
 			pay_play_costs(_pending_cost_below)
@@ -655,13 +724,14 @@ func common_pre_move_scripts(new_host: Node, old_host: Node, move_tags: Array) -
 			if cfc.NMAP.has("board") and "turn_manager" in cfc.NMAP.board and cfc.NMAP.board.turn_manager:
 				original_owner = cfc.NMAP.board.turn_manager.active_player
 				current_owner = original_owner
+				cfc.NMAP.board.log_card_played(self)
 	return new_host
 
 func _find_free_player_slot():
 	if not cfc.NMAP.has("board") or not "turn_manager" in cfc.NMAP.board or not cfc.NMAP.board.turn_manager:
 		return null
 	var zone = _get_player_zone(cfc.NMAP.board.turn_manager.active_player)
-	if not zone or not zone.has_method("find_available_slot"):
+	if not zone:
 		return null
 	return zone.find_available_slot()
 
@@ -693,7 +763,7 @@ func return_to_owner() -> void:
 # chosen slot as the board position.
 func move_to_player_zone(p_id: int) -> bool:
 	var zone = _get_player_zone(p_id)
-	if not zone or not zone.has_method("find_available_slot"):
+	if not zone:
 		return false
 	var slot = zone.find_available_slot()
 	if not slot:
@@ -744,11 +814,7 @@ func is_weak_to(action_type: String, source) -> bool:
 				weakness.append(tag)
 	if weakness.empty() or not is_instance_valid(source):
 		return false
-	var source_tags := []
-	if source.has_method("get_all_tags"):
-		source_tags = source.get_all_tags()
-	elif source.has_method("_all_tags"):
-		source_tags = source._all_tags(source)
+	var source_tags = source.get_all_tags()
 	for tag in weakness:
 		if tag in source_tags:
 			return true
@@ -770,5 +836,5 @@ func _on_Card_gui_input(event) -> void:
 	._on_Card_gui_input(event)
 	if event is InputEventMouseButton:
 		if event.is_pressed() and event.get_button_index() == 1:
-			if cfc.NMAP.has("board") and cfc.NMAP.board.has_method("select_card_for_action"):
+			if cfc.NMAP.has("board"):
 				cfc.NMAP.board.select_card_for_action(self)

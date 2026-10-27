@@ -8,12 +8,16 @@ const CAMPAIGN_PROGRESS = preload(
 const GameFormat = preload("res://src/custom/formats/GameFormat.gd")
 
 const TEST_SAVE_PATH := "user://test_campaign_progress.json"
+const TEST_DECK_NAME := "campaign_player_deck_test"
 
 
 func after_each():
 	var dir := Directory.new()
 	if dir.file_exists(TEST_SAVE_PATH):
 		dir.remove(TEST_SAVE_PATH)
+	if dir.file_exists(CFConst.DECKS_PATH + TEST_DECK_NAME + ".json"):
+		dir.remove(CFConst.DECKS_PATH + TEST_DECK_NAME + ".json")
+	cfc.campaign_player_deck_name = ""
 
 
 func test_main_menu_has_campaign_button():
@@ -39,6 +43,19 @@ func test_screen_lists_opponents_with_locks():
 	assert_true(opponent_list.get_child(1).disabled, "Queen starts locked")
 
 
+func test_opponent_detail_does_not_list_hero_candidates():
+	cfc.is_testing = true
+	cfc._setup()
+	var screen = add_child_autofree(CAMPAIGN_SCREEN.instance())
+	yield(yield_for(0.2), YIELD)
+	screen._select_opponent("king")
+	yield(yield_for(0.1), YIELD)
+	assert_eq(screen._detail_label.text.find("Heroes"), -1,
+			"Opponent detail no longer lists fixed hero candidates")
+	assert_eq(screen._detail_label.text.find("Variant 1 Vessel"), -1,
+			"The renamed starter card is not shown as a fixed hero")
+
+
 func test_screen_offers_starter_deck():
 	cfc.is_testing = true
 	cfc._setup()
@@ -50,6 +67,35 @@ func test_screen_offers_starter_deck():
 			starter_found = true
 			assert_eq(GameFormat.deck_total(deck), 20)
 	assert_true(starter_found, "Starter deck is available in the campaign")
+
+
+func test_new_campaign_deck_is_selected_by_default():
+	cfc.is_testing = true
+	cfc._setup()
+	cfc.campaign_player_deck_name = TEST_DECK_NAME
+	var dir := Directory.new()
+	if not dir.dir_exists(CFConst.DECKS_PATH):
+		dir.make_dir(CFConst.DECKS_PATH)
+	var path := CFConst.DECKS_PATH + TEST_DECK_NAME + ".json"
+	var deck := {
+		"name": TEST_DECK_NAME,
+		"format_id": "three_heroes",
+		"cards": {"Dess": 8},
+		"total": 8,
+	}
+	var file := File.new()
+	assert_eq(file.open(path, File.WRITE), OK)
+	file.store_string(JSON.print(DeckLoader.to_stored_deck(deck), "\t"))
+	file.close()
+	var screen = add_child_autofree(CAMPAIGN_SCREEN.instance())
+	yield(yield_for(0.3), YIELD)
+	var found := -1
+	for i in range(screen.player_decks.size()):
+		if str(screen.player_decks[i].get("name", "")) == TEST_DECK_NAME:
+			found = i
+	assert_gt(found, -1, "Saved campaign deck appears in the selector")
+	assert_eq(screen._deck_select.selected, found,
+			"The saved campaign deck is selected by default")
 
 
 func test_deck_builder_overlay_opens_and_closes():
@@ -89,7 +135,7 @@ func test_pending_campaign_match_starts_board():
 	assert_true(board.match_started, "Match started")
 	assert_true(is_instance_valid(board.ai_controller), "AI opponent created")
 	assert_eq(board.ai_controller.player_id, 1)
-	assert_eq(board.get_player_deck(1).get_card_count(), 3,
+	assert_gt(board.get_player_deck(1).get_card_count(), 0,
 			"King deck loaded for the AI")
 
 

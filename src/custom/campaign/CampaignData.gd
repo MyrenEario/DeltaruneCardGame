@@ -12,25 +12,12 @@ static func get_opponents(campaign: Dictionary) -> Array:
 	var opponents = campaign.get("opponents", [])
 	if typeof(opponents) != TYPE_ARRAY:
 		return []
-	# hero_cards are stored as permanent ids; hand them out as names.
 	var resolved := []
 	for opponent in opponents:
 		if typeof(opponent) != TYPE_DICTIONARY:
 			continue
-		var copy: Dictionary = opponent.duplicate(true)
-		copy["hero_cards"] = _resolve_refs(copy.get("hero_cards", []))
-		resolved.append(copy)
+		resolved.append(opponent.duplicate(true))
 	return resolved
-
-
-static func _resolve_refs(refs) -> Array:
-	var names := []
-	if typeof(refs) != TYPE_ARRAY:
-		return names
-	for ref in refs:
-		var card_name = cfc.resolve_card_name(str(ref))
-		names.append(str(ref) if str(card_name) == "" else str(card_name))
-	return names
 
 
 static func find_opponent(campaign: Dictionary, opponent_id: String) -> Dictionary:

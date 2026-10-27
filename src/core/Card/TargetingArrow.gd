@@ -3,6 +3,20 @@
 class_name TargetingArrow
 extends Line2D
 
+# Colour used while targeting each action type.
+const COLOR_ATTACK := Color(1, 0.25, 0.25)
+const COLOR_SPARE := Color(0.25, 0.85, 0.35)
+const COLOR_CONTROL := CFConst.TARGETTING_ARROW_COLOUR
+
+
+static func color_for_action(action_type: String) -> Color:
+	match str(action_type):
+		"Attack", "Fight":
+			return COLOR_ATTACK
+		"Spare", "Mercy":
+			return COLOR_SPARE
+	return COLOR_CONTROL
+
 # Emitted whenever the object spawns a targeting arrow.
 signal initiated_targeting
 # Emitted whenever the object has selected a target.
@@ -30,6 +44,57 @@ func _ready() -> void:
 	$ArrowHead/Area2D.connect("area_entered", self, "_on_ArrowHead_area_entered")
 	# warning-ignore:return_value_discarded
 	$ArrowHead/Area2D.connect("area_exited", self, "_on_ArrowHead_area_exited")
+
+
+func set_arrow_color(color: Color) -> void:
+	default_color = color
+	$ArrowHead.color = color
+
+
+# Center of the card (or control) this arrow belongs to, in global coordinates.
+func card_center() -> Vector2:
+	var half: Vector2
+	if "rect_size" in owner_object:
+		half = owner_object.rect_size / 2
+	else:
+		half = owner_object.card_size / 2
+	return global_position + half * scale
+
+
+# Draws a static arrow between two global points in the given colour. Used for
+# AI action previews and for cost-reduction arrows.
+func draw_between(start_global: Vector2, end_global: Vector2, color: Color) -> void:
+	is_targeting = false
+	clear_points()
+	set_arrow_color(color)
+	$ArrowHead.visible = true
+	$ArrowHead/Area2D.monitoring = false
+	var start_local := to_local(start_global)
+	var end_local := to_local(end_global)
+	var curve := Curve2D.new()
+	curve.add_point(start_local, Vector2.ZERO,
+			start_global.direction_to(get_viewport().size / 2) * 75)
+	curve.add_point(end_local, Vector2.ZERO, Vector2.ZERO)
+	set_points(curve.get_baked_points())
+	if get_point_count() <= 0:
+		return
+	$ArrowHead.position = get_point_position(get_point_count() - 1)
+	for _del in range(1, 3):
+		if get_point_count() > 1:
+			remove_point(get_point_count() - 1)
+	if get_point_count() <= 0:
+		return
+	$ArrowHead.rotation = get_point_position(
+			get_point_count() - 1).direction_to(end_local).angle()
+	visible = true
+
+
+func hide_arrow() -> void:
+	is_targeting = false
+	clear_points()
+	$ArrowHead.visible = false
+	$ArrowHead/Area2D.monitoring = false
+	visible = false
 
 
 func _process(_delta: float) -> void:

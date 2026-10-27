@@ -8,6 +8,7 @@ const DeckLoaderScript = preload(
 const GameFormat = preload("res://src/custom/formats/GameFormat.gd")
 const DECK_BUILDER_SCENE = preload(
 		"res://src/custom/CGFDeckbuilder/CGFDeckBuilder.tscn")
+const CAMPAIGN_DECK_PREFIX := "campaign_player_deck"
 
 var campaign := {}
 var progress := {}
@@ -112,10 +113,41 @@ func _build_deck_selector() -> void:
 			GameFormat.deck_total(deck),
 		])
 	_deck_select.disabled = player_decks.empty()
+	var default_index := _default_deck_index()
+	if default_index >= 0:
+		_deck_select.selected = default_index
 	if player_decks.empty():
 		_start_button.disabled = true
 		_set_status("Build a deck for this format before starting.",
 				Color(1, 0.6, 0.3))
+
+
+# The deck just built at the campaign start is selected automatically. If that
+# name is unavailable (e.g. a fresh session), the newest campaign deck wins.
+func _default_deck_index() -> int:
+	var preferred := str(cfc.campaign_player_deck_name)
+	if not preferred.empty():
+		for i in range(player_decks.size()):
+			if str(player_decks[i].get("name", "")) == preferred:
+				return i
+	var best_index := -1
+	var best_number := 0
+	for i in range(player_decks.size()):
+		var number := _campaign_deck_number(
+				str(player_decks[i].get("name", "")))
+		if number > best_number:
+			best_number = number
+			best_index = i
+	return best_index
+
+
+func _campaign_deck_number(deck_name: String) -> int:
+	if not deck_name.begins_with(CAMPAIGN_DECK_PREFIX):
+		return 0
+	var suffix := deck_name.substr(CAMPAIGN_DECK_PREFIX.length())
+	if suffix.is_valid_integer():
+		return int(suffix)
+	return 0
 
 
 func _build_opponent_list() -> void:
@@ -160,11 +192,10 @@ func _select_opponent(opponent_id: String) -> void:
 		return
 	_load_portrait(str(opponent.get("portrait", "")))
 	var deck := CampaignDataScript.load_opponent_deck(opponent)
-	_detail_label.text = "%s\nDifficulty: %d\nDeck size: %d\nHeroes: %s" % [
+	_detail_label.text = "%s\nDifficulty: %d\nDeck size: %d" % [
 		str(opponent.get("name", opponent_id)),
 		int(opponent.get("difficulty", 0)),
 		int(deck.get("total", 0)),
-		", ".join(_string_array(opponent.get("hero_cards", []))),
 	]
 	_refresh_start_button()
 
@@ -243,12 +274,3 @@ func _set_status(text: String, color: Color) -> void:
 	_status_label.set("custom_colors/font_color", color)
 
 
-func _string_array(value) -> Array:
-	var result := []
-	if typeof(value) != TYPE_ARRAY:
-		return result
-	for entry in value:
-		var text := str(entry)
-		if not text.empty():
-			result.append(text)
-	return result

@@ -1,4 +1,5 @@
 {
+	"schema_version": 2,
 	"name": "Three Heroes Starter",
 	"format_id": "three_heroes",
 	"cards": {
@@ -9,9 +10,21 @@
 		"338119a11ce44b879dace7468fea25ef": 2,
 		"b5e2d6b1abf244de92db17c956ff00d4": 2,
 		"2d8dcd274399478cb74b8cf51daa8b99": 2,
-		"76bbec67a51b426881ebc4db4e75687d": 2,
-		"5f2f93e6a64544b99ffc012f08ce357f": 2,
-		"4443391356114ba2acab91f44a858d11": 2
+		"4443391356114ba2acab91f44a858d11": 2,
+		"76b5b21864f04a3fa3be919802e59abd": 2,
+		"b2ea1d7ca47043f5a3000c98851e43c0": 2
+	},
+	"card_names": {
+		"bfcd76b016b7404092bb6e495218e692": "K. Round",
+		"e3f0b716f441434e8c0b8c9b47a1462e": "Aqua",
+		"4826f1dee8674fae83ca7f19f6767314": "Orange",
+		"144bf811dde3480da51f85b68f974e59": "Snowdrake",
+		"338119a11ce44b879dace7468fea25ef": "Bloxer",
+		"b5e2d6b1abf244de92db17c956ff00d4": "Green",
+		"2d8dcd274399478cb74b8cf51daa8b99": "Head Hathy",
+		"4443391356114ba2acab91f44a858d11": "Napstablook",
+		"76b5b21864f04a3fa3be919802e59abd": "Rudinn",
+		"b2ea1d7ca47043f5a3000c98851e43c0": "Hathy"
 	},
 	"total": 20
 }

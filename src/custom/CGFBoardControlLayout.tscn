@@ -130,7 +130,7 @@ __meta__ = {
 }
 
 [node name="PlacementGridDemo" parent="." instance=ExtResource( 7 )]
-margin_left = 775.0
+margin_left = 650.0
 margin_top = 240.0
 margin_right = 1274.0
 margin_bottom = 436.0

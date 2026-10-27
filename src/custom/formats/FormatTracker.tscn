@@ -27,6 +27,8 @@ corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
 [node name="FormatTracker" type="PanelContainer"]
+margin_right = 540.0
+margin_bottom = 300.0
 rect_min_size = Vector2( 540, 300 )
 mouse_filter = 1
 custom_styles/panel = SubResource( 1 )
@@ -36,10 +38,10 @@ __meta__ = {
 }
 
 [node name="Margin" type="MarginContainer" parent="."]
-margin_left = 8.0
-margin_top = 8.0
-margin_right = 8.0
-margin_bottom = 8.0
+margin_left = 2.0
+margin_top = 2.0
+margin_right = 538.0
+margin_bottom = 298.0
 mouse_filter = 2
 custom_constants/margin_right = 8
 custom_constants/margin_top = 8
@@ -49,48 +51,50 @@ custom_constants/margin_bottom = 8
 [node name="VBox" type="VBoxContainer" parent="Margin"]
 margin_left = 8.0
 margin_top = 8.0
-margin_right = 8.0
-margin_bottom = 8.0
+margin_right = 528.0
+margin_bottom = 288.0
 mouse_filter = 2
 custom_constants/separation = 4
 
 [node name="Header" type="HBoxContainer" parent="Margin/VBox"]
-margin_right = 524.0
-margin_bottom = 27.0
+margin_right = 520.0
+margin_bottom = 20.0
 mouse_filter = 2
 custom_constants/separation = 8
 
 [node name="Title" type="Label" parent="Margin/VBox/Header"]
-margin_right = 82.0
-margin_bottom = 27.0
+margin_top = 3.0
+margin_right = 73.0
+margin_bottom = 17.0
 text = "Objectives:"
 
 [node name="FormatSelect" type="OptionButton" parent="Margin/VBox/Header"]
-margin_left = 90.0
-margin_right = 378.0
-margin_bottom = 27.0
+margin_left = 81.0
+margin_right = 355.0
+margin_bottom = 20.0
 size_flags_horizontal = 3
 
 [node name="ScoreLabel" type="Label" parent="Margin/VBox/Header"]
-margin_left = 386.0
-margin_right = 524.0
-margin_bottom = 27.0
+margin_left = 363.0
+margin_top = 3.0
+margin_right = 520.0
+margin_bottom = 17.0
 text = "P1 score 0  |  P2 score 0"
 align = 2
 
 [node name="Objectives" type="HBoxContainer" parent="Margin/VBox"]
-margin_top = 31.0
-margin_right = 524.0
-margin_bottom = 253.0
+margin_top = 24.0
+margin_right = 520.0
+margin_bottom = 262.0
 mouse_filter = 2
 size_flags_vertical = 3
 custom_constants/separation = 4
 alignment = 1
 
 [node name="NeedLabel" type="Label" parent="Margin/VBox"]
-margin_top = 257.0
-margin_right = 524.0
-margin_bottom = 284.0
+margin_top = 266.0
+margin_right = 520.0
+margin_bottom = 280.0
 text = "Best total cost  P1: 0  |  P2: 0"
 align = 1
 autowrap = true
@@ -100,10 +104,10 @@ rect_min_size = Vector2( 380, 180 )
 custom_styles/panel = SubResource( 2 )
 
 [node name="GameOverMargin" type="MarginContainer" parent="GameOver"]
-margin_left = 16.0
-margin_top = 16.0
-margin_right = 16.0
-margin_bottom = 16.0
+margin_left = 2.0
+margin_top = 2.0
+margin_right = 378.0
+margin_bottom = 178.0
 custom_constants/margin_right = 16
 custom_constants/margin_top = 16
 custom_constants/margin_left = 16
@@ -112,8 +116,8 @@ custom_constants/margin_bottom = 16
 [node name="GameOverVBox" type="VBoxContainer" parent="GameOver/GameOverMargin"]
 margin_left = 16.0
 margin_top = 16.0
-margin_right = 16.0
-margin_bottom = 16.0
+margin_right = 360.0
+margin_bottom = 160.0
 custom_constants/separation = 10
 
 [node name="GameOverTitle" type="Label" parent="GameOver/GameOverMargin/GameOverVBox"]

@@ -1,6 +1,8 @@
 # test_play_rules.gd
 extends "res://tests/UTcommon.gd"
 
+const FormatScoring = preload("res://src/custom/formats/FormatScoring.gd")
+
 var p1: BoardPlacementGrid
 
 func before_each():
@@ -23,6 +25,10 @@ func _place_in_slot(card, slot) -> void:
 	card._placement_slot = slot
 	card.current_owner = 0
 	card.original_owner = 0
+
+func test_placement_grid_has_five_slots():
+	assert_eq(p1.get_slot_count(), 5, "The field has five slots")
+
 
 func test_free_slot_play_applies_no_tag_reductions():
 	var dess = _make_card("Dess")
@@ -229,3 +235,72 @@ func test_base_char_accepts_arbitrarily_many_roles():
 			"First role keeps its splay offset")
 	assert_eq(dess.global_position.y + 112.0, second_role.global_position.y,
 			"Second role is splayed below the first role")
+
+
+func test_role_stack_uses_max_level_and_stats():
+	var dess = _make_card("Dess")
+	var unused = _make_card("UNUSED")
+	dess.properties["ActionType"] = "Fight"
+	dess.properties["AT"] = 3
+	dess.properties["DefenseType"] = "Control"
+	dess.properties["HP"] = 4
+	unused.properties["ActionType"] = "Control"
+	unused.properties["AT"] = 2
+	unused.properties["DefenseType"] = "Fight"
+	unused.properties["HP"] = 1
+	var slot = p1.get_slot(0)
+	_place_in_slot(dess, slot)
+	_place_in_slot(unused, slot)
+	assert_true(unused.stack_on(dess), "UNUSED merged onto Dess")
+
+	assert_eq(unused.get_lv(), 5, "Stack level is Dess's level 5")
+	assert_eq(unused.get_attack_value(), 3, "Attack is the maximum")
+	assert_eq(unused.get_control_value(), 2, "Control is the maximum")
+	assert_eq(unused.get_spare_value(), 0, "Neither card has Mercy strength")
+	assert_eq(unused.get_defense_value("Control"), 4,
+			"Control defense is the maximum")
+	assert_eq(unused.get_defense_value("Fight"), 1,
+			"Fight defense is the maximum")
+	assert_eq(unused.get_defense_value("Mercy"), 0,
+			"Neither card has Mercy defense")
+
+
+func test_role_stack_level_prevents_a_weak_knockout():
+	var dess = _make_card("Dess")
+	var unused = _make_card("UNUSED")
+	var slot = p1.get_slot(0)
+	_place_in_slot(dess, slot)
+	_place_in_slot(unused, slot)
+	assert_true(unused.stack_on(dess), "UNUSED merged onto Dess")
+
+	var p2 = load("res://src/custom/CGFPlacementGridDemo.tscn").instance()
+	p2.name = "Player2Zone"
+	board.add_child(p2)
+	cfc.NMAP["player2zone"] = p2
+	var attacker = _make_card("Aaron")
+	attacker.properties["ActionType"] = "Fight"
+	attacker.properties["AT"] = 1
+	_place_in_slot(attacker, p2.get_slot(0))
+	attacker.current_owner = 1
+	attacker.original_owner = 1
+	var tm = cfc.NMAP.board.turn_manager
+	tm.active_player = 1
+	tm.execute_attack(attacker, unused)
+
+	assert_eq(unused.get_lv(), 5, "Stack defense level is Dess's 5")
+	assert_eq(unused.knocked_out_turns, 0,
+			"An attack too weak for Dess does not knock out the stack")
+
+
+func test_role_stack_contributes_to_objectives():
+	var dess = _make_card("Dess")
+	var unused = _make_card("UNUSED")
+	var slot = p1.get_slot(0)
+	_place_in_slot(dess, slot)
+	_place_in_slot(unused, slot)
+	assert_true(unused.stack_on(dess), "UNUSED merged onto Dess")
+
+	var third_hero = _make_card("Third Hero")
+	var score := FormatScoring.score([third_hero], p1)
+	assert_gt(score, 0,
+			"The fused stack contributes to the Third Hero objective")

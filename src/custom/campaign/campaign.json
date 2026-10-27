@@ -14,11 +14,6 @@
 			"id": "king",
 			"name": "King",
 			"portrait": "res://assets/cardimages/King.png",
-			"hero_cards": [
-				"22e5e09678bd4eaaa729b34fda727e67",
-				"2d8dcd274399478cb74b8cf51daa8b99",
-				"f6c93ffc6f0f4976ae492c3aaff4dc7e"
-			],
 			"deck_path": "res://src/custom/campaign/decks/king.json",
 			"difficulty": 1,
 			"unlock_after": null
@@ -27,11 +22,6 @@
 			"id": "queen",
 			"name": "Queen",
 			"portrait": "res://assets/cardimages/Queen.png",
-			"hero_cards": [
-				"ec99997f7b88478ab17503083172efeb",
-				"50dbe7cecd2b4c38a422c0e53c431286",
-				"b6fdb169fcdd4df2b2b48a47893fae99"
-			],
 			"deck_path": "res://src/custom/campaign/decks/queen.json",
 			"difficulty": 2,
 			"unlock_after": "king"
@@ -40,11 +30,6 @@
 			"id": "roaring_knight",
 			"name": "Roaring Knight",
 			"portrait": "res://assets/cardimages/Roaring Knight.png",
-			"hero_cards": [
-				"e7dd856054be4c308fffa91b80152d63",
-				"d74029dcac5f43afb63a468168406388",
-				"4b4945ab8a9f4bc9843f260f212a08c4"
-			],
 			"deck_path": "res://src/custom/campaign/decks/roaring_knight.json",
 			"difficulty": 3,
 			"unlock_after": "queen"
@@ -53,15 +38,6 @@
 			"id": "flowery",
 			"name": "Flowery",
 			"portrait": "res://assets/cardimages/Flowery.png",
-			"hero_cards": [
-				"b5e2d6b1abf244de92db17c956ff00d4",
-				"762ab2cf834b4791ad8de991ceb90ad6",
-				"fe8685369f6741f684a25a996fc62943",
-				"4826f1dee8674fae83ca7f19f6767314",
-				"c1978005659d4c3e867dfcc54c3fa8b4",
-				"e3f0b716f441434e8c0b8c9b47a1462e",
-				"907e3b509df14b0a9090000ffab94672"
-			],
 			"deck_path": "res://src/custom/campaign/decks/flowery.json",
 			"difficulty": 4,
 			"unlock_after": "roaring_knight"
@@ -70,11 +46,6 @@
 			"id": "ralsei",
 			"name": "Ralsei",
 			"portrait": "res://assets/cardimages/Ralsei.png",
-			"hero_cards": [
-				"3a7d242119f847d799bc61759835c87f",
-				"7e68c32c66d74c38acb2b7d4b6c29763",
-				"935d3a08a6e846e4ade02666c641f23c"
-			],
 			"deck_path": "res://src/custom/campaign/decks/ralsei.json",
 			"difficulty": 5,
 			"unlock_after": "flowery"
@@ -83,11 +54,6 @@
 			"id": "eram",
 			"name": "ERAM",
 			"portrait": "res://assets/cardimages/Mantle BossERAM.png",
-			"hero_cards": [
-				"73812cba66dd421a95f4e0c538926a6b",
-				"227345eddbd14b70aac061b1a9875744",
-				"160b57129c274c649f6e2d7ac6cd36fc"
-			],
 			"deck_path": "res://src/custom/campaign/decks/eram.json",
 			"difficulty": 6,
 			"unlock_after": "ralsei"

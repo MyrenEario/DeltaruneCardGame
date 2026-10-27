@@ -10,6 +10,9 @@ extends Control
 const CARD_OBJECT_SCENE = preload(
 		"res://src/core/CardViewer/CVGridCardObject.tscn")
 const CardRecommender = preload("res://src/custom/campaign/CardRecommender.gd")
+const CampaignDataScript = preload("res://src/custom/campaign/CampaignData.gd")
+const DeckLoaderScript = preload(
+		"res://src/core/CardViewer/DeckBuilder/DeckLoader.gd")
 const VOICE_SPEED := 14.0  # characters per second
 const OBJECTIVE_THUMB_SCALE := 1.0
 const OPTION_THUMB_SCALE := 0.7
@@ -18,23 +21,39 @@ const RECOMMEND_THUMB_SCALE := 0.55
 const DECK_TARGET := 20
 const MAX_COPIES := 3
 
-# The three "who is this hero?" steps. "options" are card names the player can
-# pick; a pick is added to their deck.
+# The three "who is this hero?" steps. "options" are permanent card ids, not
+# names, so renaming a card in the editor never breaks the campaign; they are
+# resolved to the cards' current names when shown.
 const STEPS := [
 	{
 		"objective": "First Hero",
 		"question": "Who is\nThe First Hero,\nThe Cage with Human Soul and Parts?",
-		"options": ["Kris", "Ribcage Roaring Knight", "ArachnidsGrip's Vessel"],
+		"options": [
+			"3a7d242119f847d799bc61759835c87f", # Kris
+			"36ccf23b471e4851ae343b525c110754", # Ribcage Roaring Knight
+			"e7dd856054be4c308fffa91b80152d63", # Variant 1 Vessel
+		],
 	},
 	{
 		"objective": "Second Hero",
 		"question": "Who is\nThe Second Hero,\nThe Girl with Hope crossed on her heart?",
-		"options": ["Susie", "Noelle", "Dess", "Aqua"],
+		"options": [
+			"7e68c32c66d74c38acb2b7d4b6c29763", # Susie
+			"50dbe7cecd2b4c38a422c0e53c431286", # Noelle
+			"d74029dcac5f43afb63a468168406388", # Dess
+			"e3f0b716f441434e8c0b8c9b47a1462e", # Aqua
+		],
 	},
 	{
 		"objective": "Third Hero",
 		"question": "Who is\nThe Third Hero,\nThe Prince Alone in Deepest Dark?",
-		"options": ["Ralsei", "Asriel", "Lancer", "UNUSED", "Mantle Boss ERAM"],
+		"options": [
+			"935d3a08a6e846e4ade02666c641f23c", # Ralsei
+			"4b4945ab8a9f4bc9843f260f212a08c4", # Asriel
+			"f6c93ffc6f0f4976ae492c3aaff4dc7e", # Lancer
+			"b6fdb169fcdd4df2b2b48a47893fae99", # UNUSED
+			"160b57129c274c649f6e2d7ac6cd36fc", # Mantle Boss ERAM
+		],
 	},
 ]
 
@@ -59,6 +78,15 @@ func _ready() -> void:
 	_show_step(0)
 
 
+# Turns a stored permanent card id (or a legacy name) into the card's current
+# name. Falls back to the raw reference so unknown ids still show a placeholder.
+func _option_name(ref: String) -> String:
+	var resolved := cfc.resolve_card_name(ref)
+	if resolved.empty():
+		return ref
+	return resolved
+
+
 func _show_step(index: int) -> void:
 	_step_index = index
 	_clear(_objective)
@@ -73,8 +101,8 @@ func _show_step(index: int) -> void:
 	_speak(str(step["question"]))
 	_add_card_display(_objective, str(step["objective"]),
 			OBJECTIVE_THUMB_SCALE)
-	for option_name in step["options"]:
-		_add_option(str(option_name))
+	for option_ref in step["options"]:
+		_add_option(_option_name(str(option_ref)))
 
 
 # Adds a clickable option: a flat Button holding a rendered card. The Button is
@@ -165,9 +193,37 @@ func _refresh_deck_label() -> void:
 func _finish_deck_building() -> void:
 	_speak("Your deck is ready.")
 	cfc.campaign_player_deck = _deck_counts()
+	cfc.campaign_player_deck_name = _save_campaign_deck()
 	yield(get_tree().create_timer(1.2), "timeout")
 	# warning-ignore:return_value_discarded
 	get_tree().change_scene(CFConst.PATH_CUSTOM + "campaign/CampaignScreen.tscn")
+
+
+# Saves the freshly built deck to user://Decks/campaign_player_deckX.json and
+# returns its name. X is the first free number, so a new campaign never
+# overwrites an earlier deck. Returns "" if the file could not be written.
+func _save_campaign_deck() -> String:
+	var dir := Directory.new()
+	if not dir.dir_exists(CFConst.DECKS_PATH):
+		dir.make_dir(CFConst.DECKS_PATH)
+	var index := 1
+	while dir.file_exists(
+			CFConst.DECKS_PATH + "campaign_player_deck%d.json" % index):
+		index += 1
+	var deck_name := "campaign_player_deck%d" % index
+	var campaign_data := CampaignDataScript.load_campaign()
+	var deck := {
+		"name": deck_name,
+		"format_id": str(campaign_data.get("format_id", "three_heroes")),
+		"cards": _deck_counts(),
+		"total": _deck.size(),
+	}
+	var file := File.new()
+	if file.open(CFConst.DECKS_PATH + deck_name + ".json", File.WRITE) != OK:
+		return ""
+	file.store_string(JSON.print(DeckLoaderScript.to_stored_deck(deck), "\t"))
+	file.close()
+	return deck_name
 
 
 func _deck_counts() -> Dictionary:
@@ -232,9 +288,11 @@ func get_objective_name() -> String:
 
 
 func get_options() -> Array:
+	var options := []
 	if _step_index < STEPS.size():
-		return STEPS[_step_index]["options"]
-	return []
+		for option_ref in STEPS[_step_index]["options"]:
+			options.append(_option_name(str(option_ref)))
+	return options
 
 
 func get_deck() -> Array:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://src/custom/CGFDiscard.gd" type="Script" id=1]
 [ext_resource path="res://src/core/Pile.tscn" type="PackedScene" id=2]
@@ -10,8 +10,10 @@
 [ext_resource path="res://src/custom/CGFModifiedLabelGrid.tscn" type="PackedScene" id=8]
 [ext_resource path="res://fonts/comfortaa/Comfortaa-Bold.ttf" type="DynamicFontData" id=9]
 [ext_resource path="res://src/custom/CGFDeckbuilder/CGFDeckBuilder.tscn" type="PackedScene" id=10]
-[ext_resource path="res://themes/darktheme/fonts/Reggae_One/ReggaeOne-Regular.ttf" type="DynamicFontData" id=13]
+[ext_resource path="res://src/core/CardViewer/DeckBuilder/DBDeckSummaries.tscn" type="PackedScene" id=11]
 [ext_resource path="res://themes/darktheme/darktheme.theme" type="Theme" id=12]
+[ext_resource path="res://themes/darktheme/fonts/Reggae_One/ReggaeOne-Regular.ttf" type="DynamicFontData" id=13]
+[ext_resource path="res://src/core/CardViewer/DeckBuilder/DBDeckCardObject.tscn" type="PackedScene" id=14]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0, 0, 0, 1 )
@@ -37,64 +39,13 @@ anchor_bottom = 1.0
 mouse_filter = 2
 theme = ExtResource( 12 )
 script = ExtResource( 5 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Deck" parent="." instance=ExtResource( 2 )]
 position = Vector2( 0, 475 )
 script = ExtResource( 4 )
 placement = 8
 pile_name = "P1 Deck"
-
-[node name="VBoxContainer" parent="Deck/Control/CenterContainer" index="0"]
-margin_right = 68.0
-margin_bottom = 109.0
-
-[node name="Label" parent="Deck/Control/CenterContainer/VBoxContainer" index="0"]
-margin_right = 68.0
-
-[node name="PanelContainer" parent="Deck/Control/CenterContainer/VBoxContainer" index="1"]
-margin_top = 32.0
-margin_right = 68.0
-margin_bottom = 61.0
-
-[node name="CenterContainer" parent="Deck/Control/CenterContainer/VBoxContainer/PanelContainer" index="0"]
-margin_right = 68.0
-
-[node name="CardCount" parent="Deck/Control/CenterContainer/VBoxContainer/PanelContainer/CenterContainer" index="0"]
-margin_right = 45.0
-
-[node name="View" parent="Deck/Control/ManipulationButtons" index="0"]
-margin_right = 26.0
-margin_bottom = 27.0
-
-[node name="ViewSorted" parent="Deck/Control/ManipulationButtons" index="1"]
-margin_top = 30.0
-margin_right = 26.0
-margin_bottom = 57.0
-
-[node name="Shuffle" parent="Deck/Control/ManipulationButtons" index="2"]
-margin_top = 60.0
-margin_right = 26.0
-margin_bottom = 87.0
-
-[node name="CardView" parent="Deck/ViewPopup" index="0"]
-margin_left = 2.0
-margin_top = 2.0
-margin_right = 6.0
-margin_bottom = 6.0
-
-[node name="Position" parent="Deck/Debug" index="0"]
-margin_bottom = 23.0
-
-[node name="AreaPos" parent="Deck/Debug" index="1"]
-margin_top = 26.0
-margin_bottom = 49.0
-
-[node name="Size" parent="Deck/Debug" index="2"]
-margin_top = 52.0
-margin_bottom = 75.0
+paired_hand_name = "Hand"
 
 [node name="Discard" parent="." instance=ExtResource( 2 )]
 position = Vector2( 1124, 475 )
@@ -105,55 +56,6 @@ faceup_cards = true
 
 [node name="Control" parent="Discard" index="0"]
 custom_styles/panel = SubResource( 1 )
-
-[node name="VBoxContainer" parent="Discard/Control/CenterContainer" index="0"]
-margin_right = 68.0
-margin_bottom = 109.0
-
-[node name="Label" parent="Discard/Control/CenterContainer/VBoxContainer" index="0"]
-margin_right = 68.0
-
-[node name="PanelContainer" parent="Discard/Control/CenterContainer/VBoxContainer" index="1"]
-margin_top = 32.0
-margin_right = 68.0
-margin_bottom = 61.0
-
-[node name="CenterContainer" parent="Discard/Control/CenterContainer/VBoxContainer/PanelContainer" index="0"]
-margin_right = 68.0
-
-[node name="CardCount" parent="Discard/Control/CenterContainer/VBoxContainer/PanelContainer/CenterContainer" index="0"]
-margin_right = 45.0
-
-[node name="View" parent="Discard/Control/ManipulationButtons" index="0"]
-margin_right = 26.0
-margin_bottom = 27.0
-
-[node name="ViewSorted" parent="Discard/Control/ManipulationButtons" index="1"]
-margin_top = 30.0
-margin_right = 26.0
-margin_bottom = 57.0
-
-[node name="Shuffle" parent="Discard/Control/ManipulationButtons" index="2"]
-margin_top = 60.0
-margin_right = 26.0
-margin_bottom = 87.0
-
-[node name="CardView" parent="Discard/ViewPopup" index="0"]
-margin_left = 2.0
-margin_top = 2.0
-margin_right = 6.0
-margin_bottom = 6.0
-
-[node name="Position" parent="Discard/Debug" index="0"]
-margin_bottom = 23.0
-
-[node name="AreaPos" parent="Discard/Debug" index="1"]
-margin_top = 26.0
-margin_bottom = 49.0
-
-[node name="Size" parent="Discard/Debug" index="2"]
-margin_top = 52.0
-margin_bottom = 75.0
 
 [node name="Hand" parent="." instance=ExtResource( 3 )]
 position = Vector2( 155, 480 )
@@ -182,10 +84,13 @@ excess_discard_pile_name = "player2discard"
 paired_discard_name = "Player2Discard"
 
 [node name="Counters" parent="." instance=ExtResource( 6 )]
-margin_top = 205.0
-margin_bottom = 219.0
+margin_left = 3.0
+margin_top = 136.0
+margin_right = 30.0
+margin_bottom = 157.0
 
 [node name="FancyMovementToggle" type="CheckButton" parent="."]
+visible = false
 margin_right = 12.0
 margin_bottom = 20.0
 pressed = true
@@ -195,6 +100,7 @@ __meta__ = {
 }
 
 [node name="EnableAttach" type="CheckButton" parent="."]
+visible = false
 margin_left = 194.978
 margin_top = 1.33486
 margin_right = 395.978
@@ -206,9 +112,9 @@ __meta__ = {
 
 [node name="ScalingFocusOptions" type="OptionButton" parent="."]
 margin_left = -1.33484
-margin_top = 44.0497
-margin_right = 187.665
-margin_bottom = 84.0497
+margin_top = 4.0497
+margin_right = 217.665
+margin_bottom = 44.0497
 pressed = true
 text = "Scaling + Viewport Focus"
 items = [ "Scaling Focus", null, false, 0, null, "Viewport Focus", null, false, 1, null, "Scaling + Viewport Focus", null, false, 2, null, "Scaling + Info Panels", null, false, 3, null ]
@@ -218,6 +124,7 @@ __meta__ = {
 }
 
 [node name="ReshuffleAllDeck" type="Button" parent="."]
+visible = false
 margin_left = 9.89948
 margin_top = 116.762
 margin_right = 200.899
@@ -228,6 +135,7 @@ __meta__ = {
 }
 
 [node name="ReshuffleAllDiscard" type="Button" parent="."]
+visible = false
 margin_left = 9.89948
 margin_top = 140.334
 margin_right = 200.899
@@ -238,6 +146,7 @@ __meta__ = {
 }
 
 [node name="OvalHandToggle" type="CheckButton" parent="."]
+visible = false
 margin_left = 405.31
 margin_top = 1.12245
 margin_right = 594.31
@@ -249,6 +158,7 @@ __meta__ = {
 }
 
 [node name="DeckBuilder" type="Button" parent="."]
+visible = false
 margin_left = 234.698
 margin_top = 45.0
 margin_right = 374.698
@@ -259,10 +169,10 @@ __meta__ = {
 }
 
 [node name="BackToMain" type="Button" parent="."]
-margin_left = 393.448
-margin_top = 43.7401
-margin_right = 533.448
-margin_bottom = 83.7401
+margin_left = 223.0
+margin_top = 5.0
+margin_right = 363.0
+margin_bottom = 45.0
 text = "Back to Main"
 __meta__ = {
 "_edit_use_anchors_": false
@@ -279,8 +189,37 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="ActionContainer" type="HBoxContainer" parent="."]
+margin_left = 653.0
+margin_top = 439.0
+margin_right = 968.0
+margin_bottom = 474.0
+
+[node name="AttackBtn" type="Button" parent="ActionContainer"]
+margin_right = 54.0
+margin_bottom = 35.0
+text = "Attack"
+
+[node name="ControlBtn" type="Button" parent="ActionContainer"]
+margin_left = 57.0
+margin_right = 120.0
+margin_bottom = 35.0
+text = "Control"
+
+[node name="SpareBtn" type="Button" parent="ActionContainer"]
+margin_left = 123.0
+margin_right = 173.0
+margin_bottom = 35.0
+text = "Spare"
+
+[node name="EquipBtn" type="Button" parent="ActionContainer"]
+margin_left = 176.0
+margin_right = 225.0
+margin_bottom = 35.0
+text = "Equip"
+
 [node name="Player1Zone" parent="." instance=ExtResource( 7 )]
-margin_left = 775.0
+margin_left = 650.0
 margin_top = 240.0
 margin_right = 1274.0
 margin_bottom = 436.0
@@ -293,6 +232,7 @@ margin_right = 1264.0
 margin_bottom = 226.0
 
 [node name="SeedLabel" type="Label" parent="."]
+visible = false
 margin_left = 10.0
 margin_top = 175.0
 margin_right = 265.0
@@ -304,73 +244,42 @@ __meta__ = {
 }
 
 [node name="Player2Zone" parent="." instance=ExtResource( 7 )]
-margin_left = 775.0
+margin_left = 650.0
 margin_top = 30.0
 margin_right = 1274.0
 margin_bottom = 226.0
-highlight = Color( 0.2, 0.6, 1.0, 1.3 )
+highlight = Color( 0.2, 0.6, 1, 1.3 )
 
 [node name="TurnInfo" type="VBoxContainer" parent="."]
-margin_left = 10.0
-margin_top = 80.0
-margin_right = 220.0
-margin_bottom = 170.0
+margin_left = 1.0
+margin_top = 49.0
+margin_right = 211.0
+margin_bottom = 139.0
 mouse_filter = 2
 
 [node name="TurnLabel" type="Label" parent="TurnInfo"]
 margin_right = 210.0
-margin_bottom = 20.0
+margin_bottom = 23.0
 custom_colors/font_color = Color( 1, 0.9, 0.3, 1 )
 text = "Player 1's Turn (Turn 1)"
 
 [node name="PhaseLabel" type="Label" parent="TurnInfo"]
-margin_top = 24.0
+margin_top = 26.0
 margin_right = 210.0
-margin_bottom = 44.0
+margin_bottom = 49.0
 custom_colors/font_color = Color( 0.4, 0.9, 0.4, 1 )
 text = "Play Phase"
 
 [node name="NextPhaseBtn" type="Button" parent="TurnInfo"]
-margin_top = 48.0
+margin_top = 52.0
 margin_right = 210.0
-margin_bottom = 75.0
+margin_bottom = 79.0
 text = "Next Phase"
-
-[node name="ActionContainer" type="HBoxContainer" parent="."]
-visible = false
-margin_left = 10.0
-margin_top = 210.0
-margin_right = 325.0
-margin_bottom = 245.0
-
-[node name="AttackBtn" type="Button" parent="ActionContainer"]
-margin_right = 75.0
-margin_bottom = 35.0
-text = "Attack"
-
-[node name="ControlBtn" type="Button" parent="ActionContainer"]
-margin_left = 79.0
-margin_right = 154.0
-margin_bottom = 35.0
-text = "Control"
-
-[node name="SpareBtn" type="Button" parent="ActionContainer"]
-margin_left = 158.0
-margin_right = 233.0
-margin_bottom = 35.0
-text = "Spare"
-
-[node name="EquipBtn" type="Button" parent="ActionContainer"]
-margin_left = 237.0
-margin_right = 312.0
-margin_bottom = 35.0
-text = "Equip"
 
 [node name="AIInputBlocker" type="Control" parent="."]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
-mouse_filter = 0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -408,8 +317,44 @@ margin_top = 2.0
 margin_right = -2.0
 margin_bottom = -2.0
 custom_styles/panel = SubResource( 3 )
-replacements = {
-}
+random_adverb_miss = 10
+random_adjective_miss = 1.1
+random_append_miss = 2
+second_noun_miss = 3
+max_quantity = 3
+deck_minimum = 52
+deck_maximum = 60
+deck_card_object_scene = ExtResource( 14 )
+deck_summary_scene = ExtResource( 11 )
+
+[node name="BattleLog" type="PanelContainer" parent="."]
+margin_left = 10.0
+margin_top = 252.0
+margin_right = 186.0
+margin_bottom = 444.0
+
+[node name="VBox" type="VBoxContainer" parent="BattleLog"]
+margin_left = 2.0
+margin_top = 2.0
+margin_right = 174.0
+margin_bottom = 190.0
+
+[node name="Title" type="Label" parent="BattleLog/VBox"]
+margin_right = 172.0
+margin_bottom = 23.0
+custom_colors/font_color = Color( 1, 0.9, 0.4, 1 )
+text = "Battle Log"
+
+[node name="Scroll" type="ScrollContainer" parent="BattleLog/VBox"]
+margin_top = 26.0
+margin_right = 172.0
+margin_bottom = 188.0
+size_flags_vertical = 3
+scroll_horizontal_enabled = false
+
+[node name="Messages" type="VBoxContainer" parent="BattleLog/VBox/Scroll"]
+margin_right = 172.0
+size_flags_horizontal = 3
 
 [connection signal="toggled" from="FancyMovementToggle" to="." method="_on_FancyMovementToggle_toggled"]
 [connection signal="toggled" from="EnableAttach" to="." method="_on_EnableAttach_toggled"]
@@ -420,11 +365,11 @@ replacements = {
 [connection signal="pressed" from="DeckBuilder" to="." method="_on_DeckBuilder_pressed"]
 [connection signal="pressed" from="BackToMain" to="." method="_on_BackToMain_pressed"]
 [connection signal="toggled" from="Debug" to="." method="_on_Debug_toggled"]
-
-[editable path="Deck"]
-[editable path="Discard"]
-[connection signal="pressed" from="TurnInfo/NextPhaseBtn" to="." method="_on_NextPhaseBtn_pressed"]
 [connection signal="pressed" from="ActionContainer/AttackBtn" to="." method="_on_AttackBtn_pressed"]
 [connection signal="pressed" from="ActionContainer/ControlBtn" to="." method="_on_ControlBtn_pressed"]
 [connection signal="pressed" from="ActionContainer/SpareBtn" to="." method="_on_SpareBtn_pressed"]
 [connection signal="pressed" from="ActionContainer/EquipBtn" to="." method="_on_EquipBtn_pressed"]
+[connection signal="pressed" from="TurnInfo/NextPhaseBtn" to="." method="_on_NextPhaseBtn_pressed"]
+
+[editable path="Deck"]
+[editable path="Discard"]
